@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Classroom_Logo.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    h2.textstyle {
+      font-family: Ubuntu
+    }
+  </style>
+</head>
+<body>
+  <div id="dark-mode-glow"></div>
+  <video id="background-video" autoplay loop muted>
+    <!-- The background video source will be set by script.js -->
+    Your browser does not support the video tag.
+  </video>
+
+  <h1 id="page-title">Kermit Web</h1>
+
+  <!-- Add the background rectangle behind the slideshow -->
+  <div id="slideshow-background"></div>
+
+  <!-- The background image will now be part of a slideshow -->
+  <img src="https://i0.wp.com/615film.com//wp-content/uploads/2017/10/Feature-Image.jpg?ssl=1" alt="Background image for title" id="title-background-image">
+
+  <button id="settings-button" class="styled-button">settings</button>
+  <button id="theme-button" class="styled-button">themes</button>
+  <button id="music-toggle-button" class="styled-button">hide music</button>
+  <button id="credits-button" class="styled-button">credits</button>
+
+  <button id="github-button" class="styled-button">
+    <img src="https://avatars.githubusercontent.com/u/103917385?s=280&v=4" alt="GitHub Profile" class="main-image">
+  </button>
+
+  <button id="top-right-button" class="styled-button">
+    <img src="https://i.ibb.co/1fvmpQk9/Untitled-Artwork-1.png" alt="New Button" class="main-image">
+    <img src="https://pngimg.com/d/discord_PNG30.png" alt="Discord Logo" class="overlay-image">
+  </button>
+
+  <div id="theme-sidebar">
+    <h2 class="textstyle">themes</h2>
+    <!-- Theme options will be populated here by theme.js -->
+  </div>
+
+  <div id="settings-sidebar">
+    <h2 class="textstyle">settings</h2>
+    <div class="setting-option">
+      <label for="glow-color-picker">Button Glow Color:</label>
+      <input type="color" id="glow-color-picker" value="#00ffff">
+    </div>
+    <div class="setting-option">
+      <label for="glow-toggle" class="switch-label">Button Glow:</label>
+      <label class="switch">
+        <input type="checkbox" id="glow-toggle">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    <div class="setting-option">
+      <label for="dark-mode-toggle" class="switch-label">Dark Mode:</label>
+      <label class="switch">
+        <input type="checkbox" id="dark-mode-toggle">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    <div class="setting-option">
+      <label for="custom-playlist-input">Custom Playlist URL:</label>
+      <input type="text" id="custom-playlist-input" placeholder="Spotify embed URL or share link">
+    </div>
+    <div class="setting-option">
+      <button id="set-playlist-button" class="settings-button">Set Playlist</button>
+    </div>
+    <div class="setting-option">
+      <button id="save-settings-button" class="settings-button">Save Settings</button>
+    </div>
+    <div class="setting-option">
+      <input type="file" id="load-settings-input" accept=".json" style="display: none;">
+      <button id="load-settings-button" class="settings-button">Load Settings</button>
+    </div>
+  </div>
+
+  <div id="credits-sidebar">
+    <h2 class="textstyle">credits</h2>
+    <div class="credit-section">
+      <h3>Main Developer</h3>
+      <p>Kermit</p>
+    </div>
+    <div class="credit-section">
+      <h3>Co-Developers</h3>
+      <p>- OddishMaster</p>
+      <p>- eclipse</p>
+    </div>
+    <div class="credit-section">
+      <h3>Special Thanks</h3>
+      <p>To the open-source community and creators of the libraries used.</p>
+      <p>To you for using Kermit Web!</p>
+    </div>
+    <div class="credit-section">
+      <h3>Assets & Libraries</h3>
+      <p>Fonts: Google Fonts (Ubuntu, Ubuntu Mono)</p>
+      <p>Background Videos & Themes: Sourced from various public CDNs and GX.store mods.</p>
+      <p>Icons: Wikimedia, PNGimg, GitHub avatars.</p>
+    </div>
+  </div>
+
+  <div id="main-content-container">
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="Search games...">
+
+      <div id="suggestions-container"></div>
+    </div>
+
+    <!-- New container for game count and ping -->
+    <div id="info-bar-container">
+        <p id="game-count">Loading game count...</p>
+        <p id="ping-counter">Ping: --- ms</p>
+        <p id="fps-counter">FPS: --</p>
+    </div>
+
+    <div id="special-game-buttons-container">
+      <button id="special-game-button-1" data-game-url="https://k-web-topaz.vercel.app/games/supersmashbros/index.html" data-game-name="Super Smash Bros." title="Super Smash Bros.">
+        <img src="https://i.ytimg.com/vi/cTXKd5rT_g4/maxresdefault.jpg" alt="Super Smash Bros." width="100">
+        <span class="game-name-overlay">Super Smash Bros.</span>
+      </button>
+
+      <button id="special-game-button-2" data-game-url="https://k-web-topaz.vercel.app/games/pokemonemerald/index.html" data-game-name="Pokemon Emerald" title="Pokemon Emerald">
+        <img src="https://m.exophase.com/retro/games/o/4g1d4.png?77fef2fbd0386ac5de0fd6a6254f4bf1" alt="Pokemon Emerald" width="100">
+        <span class="game-name-overlay">Pokemon Emerald</span>
+      </button>
+
+      <button id="special-game-button-3" data-game-url="https://k-web-topaz.vercel.app/games/streetfighter2/index.html" data-game-name="Street Fighter 2" title="Street Fighter 2">
+        <img src="https://www.lifewire.com/thmb/e4KO03N7rRnLg7-3BQGi17b6wCw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/35276451461_3a740f2c8b_h-5bff658146e0fb002626425b-9c944609943d451eac3c310e3066ab1c.jpg" alt="Street Fighter 2" width="100">
+        <span class="game-name-overlay">Street Fighter 2</span>
+      </button>
+
+      <button id="special-game-button-4" data-game-url="https://k-web-topaz.vercel.app/games/mariokart64/index.html" data-game-name="Mario Kart 64" title="Mario Kart 64">
+        <img src="https://upload.wikimedia.org/wikipedia/en/a/a1/Mario_Kart_64.jpg" alt="Mario Kart 64" width="100">
+        <span class="game-name-overlay">Mario Kart 64</span>
+      </button>
+
+      <button id="special-game-button-5" data-game-url="https://k-web-topaz.vercel.app/games/cookingmama/index.html" data-game-name="Cooking Mama" title="Cooking Mama">
+        <img src="https://i5.walmartimages.com/seo/Cooking-Mama-Sweet-Shop-Crescent-Marketing-Nintendo-3DS-887195000325_01114974-8fb5-4328-838e-04b599c4d2be.07788a2b9534e953e2ff30831fec6a07.jpeg" alt="Cooking Mama" width="100">
+        <span class="game-name-overlay">Cooking Mama</span>
+      </button>
+
+      <button id="special-game-button-6" data-game-url="https://k-web-topaz.vercel.app/games/superstarsaga/index.html" data-game-name="Superstar Saga" title="Superstar Saga">
+        <img src="https://upload.wikimedia.org/wikipedia/en/6/63/MarioAndLuigiSuperstarSagaGBACoverArtUS.jpg" alt="Superstar Saga" width="100">
+        <span class="game-name-overlay">Superstar Saga</span>
+      </button>
+
+      <button id="special-game-button-7" data-game-url="https://k-web-topaz.vercel.app/games/sonicadvance2/index.html" data-game-name="Sonic Advance 2" title="Sonic Advance 2">
+        <img src="https://i.ytimg.com/vi/5dvEYVJPH_0/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBcRJ4FXDmB0UC9toNNr_qfHFa1Qw" alt="Sonic Advance 2" width="100">
+        <span class="game-name-overlay">Sonic Advance 2</span>
+      </button>
+
+      <button id="special-game-button-8" data-game-url="https://k-web-topaz.vercel.app/games/spirittracks/index.html" data-game-name="Spirit Tracks" title="Spirit Tracks">
+        <img src="https://m.media-amazon.com/images/I/812w5pl5foL.jpg" alt="Spirit Tracks" width="100">
+        <span class="game-name-overlay">Spirit Tracks</span>
+      </button>
+
+      <button id="special-game-button-9" data-game-url="https://k-web-topaz.vercel.app/games/kirbymassattack/index.html" data-game-name="Kirby Mass Attack" title="Kirby Mass Attack">
+        <img src="https://m.media-amazon.com/images/I/817jCiecDYL.jpg" alt="Kirby Mass Attack" width="100">
+        <span class="game-name-overlay">Kirby Mass Attack</span>
+      </button>
+
+      <button id="special-game-button-10" data-game-url="https://k-web-topaz.vercel.app/games/animalcrossingwildworld/index.html" data-game-name="Animal Crossing Wild World" title="Animal Crossing Wild World">
+        <img src="https://cdn2.steamgriddb.com/grid/ae932f41f09365b23d75c5fb70be15e0.png" alt="Animal Crossing Wild World" width="100">
+        <span class="game-name-overlay">Animal Crossing Wild World</span>
+      </button>
+
+      <button id="special-game-button-11" data-game-url="https://k-web-topaz.vercel.app/games/supermariobros3/index.html" data-game-name="Super Mario Bros 3" title="Super Mario Bros 3">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDlGHbMNvPYnCqiTh8mUY_6bJfjBh88Fubgg&s" alt="Super Mario Bros 3" width="100">
+        <span class="game-name-overlay">Super Mario Bros 3</span>
+      </button>
+      <button id="special-game-button-12" data-game-url="https://k-web-topaz.vercel.app/games/slope/index.html" data-game-name="Slope" title="Slope">
+        <img src="https://play-lh.googleusercontent.com/uJn2i9h7KxYQarC_c3K4qH6o7gLtflFnhD_dN14MNkzHJ1NeNFzCL69jpB5mT0vCoQs" alt="Slope" width="100">
+        <span class="game-name-overlay">Slope</span>
+      </button>
+      <button id="special-game-button-13" data-game-url="https://k-web-topaz.vercel.app/games/cookieclicker/index.html" data-game-name="Cookie Clicker" title="Cookie Clicker">
+        <img src="https://play-lh.googleusercontent.com/Z1MOuuiD05ZN5LkVmMEvKF0mqAc-FknaQ2j8s4dZiO-LSPQX4EEA3RVJdlQEtxe96ok" alt="Cookie Clicker" width="100">
+        <span class="game-name-overlay">Cookie Clicker</span>
+      </button>
+      <button id="special-game-button-14" data-game-url="https://k-web-topaz.vercel.app/games/crossy/index.html" data-game-name="Crossy Road" title="Crossy Road">
+        <img src="https://images.launchbox-app.com//79c9cc6a-9c10-48a2-ae21-50644daf8995.jpg" alt="Crossy Road" width="100">
+        <span class="game-name-overlay">Crossy Road</span>
+      </button>
+      <button id="special-game-button-15" data-game-url="https://k-web-topaz.vercel.app/games/fnf/index.html" data-game-name="Friday Night Funkin'" title="Friday Night Funkin'">
+        <img src="https://www.fnfgo.com/wp-content/uploads/2021/08/friday-night-funkin.jpg" alt="Friday Night Funkin'" width="100">
+        <span class="game-name-overlay">Friday Night Funkin'</span>
+      </button>
+      <button id="special-game-button-16" data-game-url="https://k-web-topaz.vercel.app/games/skibidi1v100/index.html" data-game-name="Skibidi Toilet 1v100" title="Skibidi Toilet 1v100">
+        <img src="https://kbhgames.com/wp-content/uploads/2023/08/You-vs-100-Skibidi-Toilets.jpg" alt="Skibidi Toilet 1v100" width="100">
+        <span class="game-name-overlay">Skibidi Toilet 1v100</span>
+      </button>
+      <button id="special-game-button-17" data-game-url="https://k-web-topaz.vercel.app/games/gdlite/index.html" data-game-name="Geometry Dash" title="Geometry Dash">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/Logo_of_Geometry_Dash.svg/800px-Logo_of_Geometry_Dash.svg.png" alt="Geometry Dash" width="100">
+        <span class="game-name-overlay">Geometry Dash</span>
+      </button>
+      <button id="special-game-button-18" data-game-url="https://k-web-topaz.vercel.app/games/pizzatower/" data-game-name="Pizza Tower" title="Pizza Tower">
+        <img src="https://sm.ign.com/ign_il/cover/p/pizza-towe/pizza-tower_gngf.jpg" alt="Pizza Tower" width="100">
+        <span class="game-name-overlay">Pizza Tower</span>
+      </button>
+      <button id="special-game-button-19" data-game-url="https://k-web-topaz.vercel.app/games/thebindingofisaac/index.html" data-game-name="The Binding of Isaac" title="The Binding of Isaac">
+        <img src="https://upload.wikimedia.org/wikipedia/en/f/fa/Binding_of_isaac_header.jpg" alt="The Binding of Isaac" width="100">
+        <span class="game-name-overlay">The Binding of Isaac</span>
+      </button>
+      <button id="special-game-button-20" data-game-url="https://k-web-topaz.vercel.app/games/stickmanhook/index.html" data-game-name="Stickman Hook" title="Stickman Hook">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTac7pXgdjXcZFfDk-JNK-BHVH13PJrzMzMQe5Te-IG1E2uU3vYir-Z3-YWxlTR1fsiTQk&usqp=CAU" alt="Stickman Hook" width="100">
+        <span class="game-name-overlay">Stickman Hook</span>
+      </button>
+      <button id="special-game-button-21" data-game-url="https://k-web-topaz.vercel.app/games/drifthunters/index.html" data-game-name="Drift Hunters" title="Drift Hunters">
+        <img src="https://drifthunters2.io/data/image/favicon.png" alt="Drift Hunters" width="100">
+        <span class="game-name-overlay">Drift Hunters</span>
+      </button>
+      <button id="special-game-button-22" data-game-url="https://k-web-topaz.vercel.app/games/mc/index.html" data-game-name="Minecraft" title="Minecraft">
+        <img src="https://m.media-amazon.com/images/M/MV5BNjQzMDlkNDctYmE3Yi00ZWFiLTlmOWYtMjI4MzQ4Y2JhZjY2XkEyXkFqcGc@._V1_.jpg" alt="Minecraft" width="100">
+        <span class="game-name-overlay">Minecraft</span>
+      </button>
+      <button id="special-game-button-23" data-game-url="https://k-web-topaz.vercel.app/games/sm64/index.html" data-game-name="Super Mario 64" title="Super Mario 64">
+        <img src="https://m.media-amazon.com/images/M/MV5BNjhmNzg4ZTMtNWVhMy00NjgwLThhZjUtZjY4ZmU2YTVhYjUwXkEyXkFqcGc@._V1_QL75_UY281_CR6,0,190,281_.jpg" alt="Super Mario 64" width="100">
+        <span class="game-name-overlay">Super Mario 64</span>
+      </button>
+      <button id="special-game-button-24" data-game-url="https://k-web-topaz.vercel.app/games/papermario/index.html" data-game-name="Paper Mario" title="Paper Mario">
+        <img src="https://assetsio.gnwcdn.com/paper-mario-the-thousand-year-door-remake-header.png?width=1200&height=630&fit=crop&enable=upscale&auto=webp" alt="Paper Mario" width="100">
+        <span class="game-name-overlay">Paper Mario</span>
+      </button>
+      <button id="special-game-button-25" data-game-url="https://k-web-topaz.vercel.app/games/rocketsoccer/index.html" data-game-name="Rocket Soccer" title="Rocket Soccer">
+        <img src="https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=314,height=314,fit=cover,f=auto/e521bbbf13a6480b60d75421e7edc8d8d0e1edadaccd7d43438864b62a74088a.png" alt="Rocket Soccer" width="100">
+        <span class="game-name-overlay">Rocket Soccer</span>
+      </button>
+      <button id="special-game-button-26" data-game-url="https://k-web-topaz.vercel.app/games/holeio/index.html" data-game-name="Hole io" title="Hole io">
+        <img src="https://upload.wikimedia.org/wikipedia/en/c/ca/Hole.io_logo.jpg" alt="Hole io" width="100">
+        <span class="game-name-overlay">Hole io</span>
+      </button>
+      <button id="special-game-button-27" data-game-url="https://k-web-topaz.vercel.app/games/spirittracks/index.html" data-game-name="Legends of Zelda: Spirit Tracks" title="Legends of Zelda: Spirit Tracks">
+        <img src="https://m.media-amazon.com/images/I/91WRrZZXw-L._AC_UF1000,1000_QL80_.jpg" alt="Legends of Zelda: Spirit Tracks" width="100">
+        <span class="game-name-overlay">Legends of Zelda: Spirit Tracks</span>
+      </button>
+      <button id="special-game-button-28" data-game-url="https://k-web-topaz.vercel.app/games/lazyjump3d/index.html" data-game-name="Lazy Jump 3D" title="Lazy Jump 3D">
+        <img src="https://m.media-amazon.com/images/I/81JHYpF2SKL.png" alt="Lazy Jump 3D" width="100">
+        <span class="game-name-overlay">Lazy Jump 3D</span>
+      </button>
+      <button id="special-game-button-29" data-game-url="https://k-web-topaz.vercel.app/games/badtimesimulator/index.html" data-game-name="Bad Time Simulator" title="Bad Time Simulator">
+        <img src="https://badtimesimulator.io/upload/cache/upload/imgs/sans-fight-simulator-m240x240.jpg" alt="Bad Time Simulator" width="100">
+        <span class="game-name-overlay">Bad Time Simulator</span>
+      </button>
+      <button id="special-game-button-30" data-game-url="https://k-web-topaz.vercel.app/games/gunfest/index.html" data-game-name="Gun Fest" title="Gun Fest">
+        <img src="https://a.silvergames.com/j/b/gun-fest.jpg" alt="Gun Fest" width="100">
+        <span class="game-name-overlay">Gun Fest</span>
+      </button>
+      <button id="special-game-button-31" data-game-url="https://k-web-topaz.vercel.app/games/clusterrush/index.html" data-game-name="Cluster Rush" title="Cluster Rush">
+        <img src="https://nutwg.com/en/wp-content/uploads/sites/2/2024/07/2024-07-05-135225600.webp" alt="Cluster Rush" width="100">
+        <span class="game-name-overlay">Cluster Rush</span>
+      </button>
+      <button id="special-game-button-32" data-game-url="https://k-web-topaz.vercel.app/games/boxingphysics2/index.html" data-game-name="Boxing Physics 2" title="Boxing Physics 2">
+        <img src="https://img.tapimg.net/market/images/5d84d599fb9dff96959facb2f0c55f46.jpg?imageView2/2/w/720/h/720/q/80/format/jpg/interlace/1/ignore-error/1&t=1" alt="Boxing Physics 2" width="100">
+        <span class="game-name-overlay">Boxing Physics 2</span>
+      </button>
+      <button id="special-game-button-33" data-game-url="https://k-web-topaz.vercel.app/games/10minutestilldawn/index.html" data-game-name="10 Minutes Till Dawn" title="10 Minutes Till Dawn">
+        <img src="https://img.itch.zone/aW1nLzg3MTU5NzMucG5n/original/0LqGxb.png" alt="10 Minutes Till Dawn" width="100">
+        <span class="game-name-overlay">10 Minutes Till Dawn</span>
+      </button>
+      <button id="special-game-button-34" data-game-url="https://k-web-topaz.vercel.app/games/pokemonstadium/index.html" data-game-name="Pokemon Stadium" title="Pokemon Stadium">
+        <img src="https://assets-prd.ignimgs.com/2022/02/28/pokemonstadium-1646017802114.jpg" alt="Pokemon Stadium" width="100">
+        <span class="game-name-overlay">Pokemon Stadium</span>
+      </button>
+      <button id="special-game-button-35" data-game-url="https://k-web-topaz.vercel.app/games/clickerheroes/index.html" data-game-name="Clicker Heroes" title="Clicker Heroes">
+        <img src="https://upload.wikimedia.org/wikipedia/en/3/3f/Clicker_Heroes_Logo.jpeg" alt="Clicker Heroes" width="100">
+        <span class="game-name-overlay">Clicker Heroes</span>
+      </button>
+      <button id="special-game-button-36" data-game-url="https://k-web-topaz.vercel.app/games/redball4/index.html" data-game-name="RedBall 4" title="RedBall 4">
+        <img src="https://www2.minijuegosgratis.com/v3/games/thumbnails/22727_7_sq.jpg" alt="RedBall 4" width="100">
+        <span class="game-name-overlay">RedBall 4</span>
+      </button>
+    </div>
+  </div>
+
+  <div style="position: fixed; top: 20px; right: 160px; z-index: 30;">
+
+  </div>
+
+  <!-- Theme application message container -->
+  <div id="theme-message-container"></div>
+
+  <!-- Bottom black bar -->
+  <div id="bottom-bar">
+    <iframe id="spotify-iframe" src="https://open.spotify.com/embed/playlist/4rDW63aN3C3BGKy1FVHDyG?utm_source=generator&repeat=true" width="100%" height="100%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "./script.js": "./script.js",
+        "./search.js": "./search.js",
+        "./theme.js": "./theme.js",
+        "./games.js": "./games.js",
+        "./ui.js": "./ui.js",
+        "./music.js": "./music.js",
+        "./settings.js": "./settings.js"
+      }
+    }
+  </script>
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>
