@@ -4,15 +4,37 @@ export function initGames(games, specialGameButtons) {
         button.addEventListener('click', () => {
             const gameUrl = button.dataset.gameUrl;
             const gameName = button.dataset.gameName;
+            // Check if the button should use an iframe. Default to true if attribute is not present.
+            const shouldUseIframe = button.dataset.useIframe !== 'false';
 
             if (gameUrl) {
-                openGameInNewTab(gameName, gameUrl);
+                // Pass false for redirectOriginalTabOnSuccess for all game/unblocker buttons
+                // Pass shouldUseIframe to control iframe usage
+                openGameInNewTab(gameName, gameUrl, false, shouldUseIframe);
             }
         });
     });
 }
 
-export function openGameInNewTab(gameName, gameUrl) {
+export function openGameInNewTab(gameName, gameUrl, redirectOriginalTabOnSuccess = true, useIframe = true) {
+    if (!useIframe) {
+        // Open directly in a new tab without iframe
+        const newTab = window.open(gameUrl, '_blank', 'noopener,noreferrer');
+        if (newTab && redirectOriginalTabOnSuccess) {
+            // Redirect the original tab to Google Classroom only if the flag is true
+            // and a new tab was successfully opened.
+            try {
+                 window.location.href = 'https://classroom.google.com/';
+            } catch (e) {
+                console.warn("Could not redirect to Google Classroom. This might be due to popup blocker interactions or browser security policies when the original tab is not focused.", e);
+            }
+        } else if (!newTab && redirectOriginalTabOnSuccess) {
+            // If popup was blocked, don't attempt redirect of original tab.
+            // The browser's popup blocker notification is sufficient.
+        }
+        return; // Exit after handling direct open
+    }
+
     // Load the game URL in an iframe within an about:blank tab
     // By writing directly to the document, we create a clean tab that
     // does not inherit the original page's scripts or styles, effectively
@@ -47,8 +69,14 @@ export function openGameInNewTab(gameName, gameUrl) {
             </html>
         `);
         newTab.document.close();
-        // Redirect the original tab to Google Classroom
-        window.location.href = 'https://classroom.google.com/';
+        // Redirect the original tab to Google Classroom only if the flag is true
+        if (redirectOriginalTabOnSuccess) {
+             try {
+                 window.location.href = 'https://classroom.google.com/';
+            } catch (e) {
+                console.warn("Could not redirect to Google Classroom. This might be due to popup blocker interactions or browser security policies when the original tab is not focused.", e);
+            }
+        }
     } else {
         // Do nothing if popup is blocked, do not show an alert.
         // The browser's built-in popup blocker notification is sufficient.
