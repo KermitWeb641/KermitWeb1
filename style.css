@@ -240,7 +240,7 @@ body.dark-mode .suggestion:hover {
 
 .styled-button {
     position: fixed;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: black;
     color: white;
     border: 2px solid white;
     padding: 12px 18px;
@@ -297,7 +297,7 @@ body.dark-mode #github-button {
     overflow: hidden;
     transform-style: preserve-3d;
     perspective: 500px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: black;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     filter: grayscale(50%);
     transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.5s ease;
@@ -318,7 +318,7 @@ body.dark-mode #github-button {
     overflow: hidden;
     transform-style: preserve-3d;
     perspective: 500px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: black;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     filter: grayscale(50%);
     transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.5s ease;
@@ -427,7 +427,7 @@ body.dark-mode #github-button {
 }
 
 .settings-button {
-    background-color: rgba(50, 50, 50, 0.5);
+    background-color: black;
     color: white;
     border: 2px solid white;
     padding: 10px 15px;
@@ -449,7 +449,7 @@ body.dark-mode #github-button {
 
 .settings-button:hover {
     transform: scale(1.05);
-    background-color: rgba(80, 80, 80, 0.7);
+    background-color: black;
     filter: grayscale(0%);
 }
 
@@ -637,20 +637,56 @@ body.dark-mode #fps-counter {
     transform: scale(1.05);
 }
 
-#special-game-buttons-container {
+#visitor-counter-container {
+    position: fixed;
+    top: 170px;
+    right: 20px;
+    z-index: 32;
+    display: flex;
+    justify-content: center;
+}
+
+#visitor-counter {
+    color: white;
+    padding: 12px 18px;
+    border: 2px solid white;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    font-family: Ubuntu;
+    background-color: rgba(128, 128, 128, 0.3);
+    font-size: 1.1em;
+    min-width: 120px;
+    text-align: center;
+}
+
+body.dark-mode #visitor-counter {
+    background-color: rgba(15, 15, 15, 0.7);
+    color: #999;
+    border-color: #333;
+}
+
+#visitor-counter:hover {
+    transform: scale(1.05);
+}
+
+#special-game-buttons-container,
+#unblocker-buttons-container {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     align-items: center;
     justify-content: center;
-    margin-top: 0px;
     padding-bottom: 30px;
     position: relative;
     overflow: hidden;
 }
 
-#special-game-buttons-container button {
-    background-color: rgba(0, 0, 0, 0.7);
+#unblocker-buttons-container {
+    margin-top: 20px;
+}
+
+.game-list-button {
+    background-color: black;
     border: 2px solid white;
     padding: 10px;
     border-radius: 15px;
@@ -673,15 +709,15 @@ body.dark-mode #fps-counter {
     overflow: hidden;
 }
 
-body.dark-mode #special-game-buttons-container button img {
+body.dark-mode .game-list-button img {
     filter: brightness(60%);
 }
 
-body.dark-mode #special-game-buttons-container button:hover img {
+body.dark-mode .game-list-button:hover img {
     filter: brightness(100%);
 }
 
-#special-game-buttons-container button img {
+.game-list-button img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -717,18 +753,44 @@ body.dark-mode #special-game-buttons-container button:hover img {
     min-height: 3.5em;
 }
 
-#special-game-buttons-container button:hover .game-name-overlay {
+.game-list-button:hover .game-name-overlay {
     opacity: 1;
     visibility: visible;
 }
 
-#special-game-buttons-container button.loaded {
+#unblockers-heading {
+    color: white;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 2.5em;
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black,
+        2px 2px 8px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    z-index: 20;
+}
+
+body.dark-mode #unblockers-heading {
+    color: #e0e0e0;
+    text-shadow:
+        -1px -1px 0 #1a1a1a,
+        1px -1px 0 #1a1a1a,
+        -1px 1px 0 #1a1a1a,
+        1px 1px 0 #1a1a1a,
+        2px 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.game-list-button.loaded {
     opacity: 1;
     transform: translateY(0);
 }
 
 .styled-button:hover,
-#special-game-buttons-container button:hover,
+.game-list-button:hover,
 #top-right-button:hover,
 #github-button:hover {
     filter: grayscale(0%);
@@ -890,5 +952,27 @@ input:checked + .slider:before {
     width: 100%;
     height: 100%;
     border: none;
+    display: block;
+}
+
+#bottom-right-github-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    padding: 8px;
+    border-radius: 50%;
+    z-index: 41;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#bottom-right-github-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     display: block;
 }
