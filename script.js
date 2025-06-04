@@ -1,6 +1,6 @@
 import { initSearch } from "./search.js";
 import { initTheme } from "./theme.js";
-import { initGames, gameData, openGameInNewTab as openInGameWindow } from "./games.js";
+import { initGames, gameData, openGameInNewTab } from "./games.js";
 
 const backgroundVideo = document.getElementById('background-video');
 const themeSidebar = document.getElementById('theme-sidebar');
@@ -16,11 +16,16 @@ const musicToggleButton = document.getElementById('music-toggle-button');
 const spotifyIframe = document.getElementById('spotify-iframe');
 const customPlaylistInput = document.getElementById('custom-playlist-input');
 const setPlaylistButton = document.getElementById('set-playlist-button');
+const visitorCounterElement = document.getElementById('visitor-counter');
+const pingCounterElement = document.getElementById('ping-counter');
+const fpsCounterElement = document.getElementById('fps-counter');
+let pingIntervalId = null;
 
 const topRightButton = document.getElementById('top-right-button');
 const githubButton = document.getElementById('github-button');
+const bottomRightGithubButton = document.getElementById('bottom-right-github-button');
 
-const specialGameButtons = document.querySelectorAll('#special-game-buttons-container button');
+const gameListButtons = document.querySelectorAll('.game-list-button'); 
 const styledButtons = document.querySelectorAll('.styled-button');
 
 const glowColorPicker = document.getElementById('glow-color-picker');
@@ -30,10 +35,6 @@ const darkModeToggle = document.getElementById('dark-mode-toggle');
 const saveSettingsButton = document.getElementById('save-settings-button');
 const loadSettingsButton = document.getElementById('load-settings-button');
 const loadSettingsInput = document.getElementById('load-settings-input');
-
-const pingCounterElement = document.getElementById('ping-counter');
-const fpsCounterElement = document.getElementById('fps-counter');
-let pingIntervalId = null;
 
 let lastFrameTime = performance.now();
 let frameCount = 0;
@@ -159,8 +160,7 @@ function loadCurrentPlaylist() {
 initTheme(themeButton, themeSidebar, backgroundVideo, spotifyIframe, showThemeMessage, loadCurrentPlaylist);
 initSearch(gameData);
 
-const updatedSpecialGameButtons = document.querySelectorAll('#special-game-buttons-container button');
-initGames(gameData, updatedSpecialGameButtons);
+initGames(gameData, gameListButtons); 
 
 function applyGlowColor(color) {
     document.documentElement.style.setProperty('--glow-color', color);
@@ -204,7 +204,7 @@ function adjustColorBrightness(hex, percent) {
 
 function updateGlowState() {
     const enableGlow = glowToggle.checked;
-    const allGlowElements = [...styledButtons, ...specialGameButtons, titleBackgroundImage];
+    const allGlowElements = [...styledButtons, ...gameListButtons, titleBackgroundImage]; 
 
     allGlowElements.forEach(element => {
         if (element.textContent === 'X' && element.closest('.popup-container')) {
@@ -311,6 +311,18 @@ function startPingMeasurement() {
     pingIntervalId = setInterval(measurePing, 5000);
 }
 
+function updateVisitorCount() {
+    if (!visitorCounterElement) return;
+    let visitorCount = parseInt(localStorage.getItem('visitorCountKermitWeb') || '0');
+    
+    // Only increment if this is a new session or the first visit in a while
+    // For simplicity, we'll increment on every page load for now.
+    // A more robust solution would involve session tracking or server-side logic.
+    visitorCount++;
+    localStorage.setItem('visitorCountKermitWeb', visitorCount.toString());
+    visitorCounterElement.textContent = `Visitors: ${visitorCount}`;
+}
+
 function toggleSidebar(sidebarToToggle, otherSidebars) {
     otherSidebars.forEach(sb => {
         if (sb && sb.classList.contains('open')) {
@@ -322,8 +334,16 @@ function toggleSidebar(sidebarToToggle, otherSidebars) {
     }
 }
 
+// Alias openGameInNewTab for clarity in its specific use case here
+const openInGameWindowViaIframe = (name, url, redirectOriginal = true) => {
+    openGameInNewTab(name, url, redirectOriginal, true); // Explicitly use iframe
+};
+
 window.addEventListener('load', () => {
-    openInGameWindow("Kermit Web", window.location.href);
+    // This call is intended to cloak the main page by opening it within an iframe in a new tab,
+    // and then redirecting the original tab.
+    openInGameWindowViaIframe("Kermit Web", window.location.href, true);
+
     const savedColor = localStorage.getItem('buttonGlowColor');
     if (savedColor) {
         glowColorPicker.value = savedColor;
@@ -381,6 +401,7 @@ window.addEventListener('load', () => {
     loadCurrentPlaylist();
     startPingMeasurement();
     requestAnimationFrame(updateFPS);
+    updateVisitorCount();
 });
 
 if (glowColorPicker) {
@@ -470,7 +491,7 @@ if (customPlaylistInput && setPlaylistButton) {
         const embedUrl = formatSpotifyEmbedUrl(customPlaylistInput.value);
         if (embedUrl) {
             localStorage.setItem('customPlaylistUrl', customPlaylistInput.value);
-            localStorage.removeItem('themePlaylistUrl');
+            localStorage.removeItem('themePlaylistUrl'); 
             loadCurrentPlaylist();
         } else {
             console.error("Invalid custom playlist URL format.");
@@ -479,14 +500,14 @@ if (customPlaylistInput && setPlaylistButton) {
     });
 }
 
-specialGameButtons.forEach((button, index) => {
+gameListButtons.forEach((button, index) => { 
     setTimeout(() => {
         button.classList.add('loaded');
 
         button.addEventListener('mousemove', handleButtonMouseMove);
         button.addEventListener('mouseleave', handleButtonMouseLeave);
 
-    }, 100 * index);
+    }, 100 * index); 
 });
 
 if (topRightButton) {
@@ -505,8 +526,16 @@ if (githubButton) {
     });
 }
 
+if (bottomRightGithubButton) {
+    bottomRightGithubButton.addEventListener('mousemove', handleButtonMouseMove);
+    bottomRightGithubButton.addEventListener('mouseleave', handleButtonMouseLeave);
+    bottomRightGithubButton.addEventListener('click', () => {
+        window.open('https://github.com/KermitWeb641/KermitWeb1', '_blank'); 
+    });
+}
+
 styledButtons.forEach(button => {
-    if (button !== topRightButton && button !== githubButton) {
+    if (button !== topRightButton && button !== githubButton && button !== bottomRightGithubButton) {
         button.addEventListener('mousemove', handleButtonMouseMove);
         button.addEventListener('mouseleave', handleButtonMouseLeave);
     }
@@ -564,15 +593,17 @@ function handleButtonMouseMove(e) {
     if (!button) return;
 
     const isStyledButton = button.classList.contains('styled-button') || button.classList.contains('settings-button');
-    const isSpecialGameButton = button.id.startsWith('special-game-button-');
+    const isGameListButton = button.classList.contains('game-list-button'); 
     const isTopRightButton = button.id === 'top-right-button';
     const isGithubButton = button.id === 'github-button';
+    const isBottomRightGithubButton = button.id === 'bottom-right-github-button';
+
 
     if (button.textContent === 'X' && button.closest('.popup-container')) {
         return;
     }
 
-    if (!isStyledButton && !isSpecialGameButton && !isTopRightButton && !isGithubButton) {
+    if (!isStyledButton && !isGameListButton && !isTopRightButton && !isGithubButton && !isBottomRightGithubButton) { 
         return;
     }
 
@@ -586,7 +617,7 @@ function handleButtonMouseMove(e) {
     const mouseX = e.clientX - rect.left - centerX;
     const mouseY = e.clientY - rect.top - centerY;
 
-    const maxRotation = 20;
+    const maxRotation = isGameListButton ? 10 : 20; 
 
     const percentageX = mouseX / centerX;
     const percentageY = mouseY / centerY;
@@ -594,9 +625,9 @@ function handleButtonMouseMove(e) {
     const rotateY = percentageX * maxRotation;
     const rotateX = percentageY * maxRotation;
 
-    if (isSpecialGameButton) {
+    if (isGameListButton) { 
         button.style.transform = `translateY(0) perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    } else if (isStyledButton || isTopRightButton || isGithubButton) {
+    } else if (isStyledButton || isTopRightButton || isGithubButton || isBottomRightGithubButton) {
         button.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     }
 }
@@ -607,15 +638,16 @@ function handleButtonMouseLeave(e) {
     if (!button) return;
 
     const isStyledButton = button.classList.contains('styled-button') || button.classList.contains('settings-button');
-    const isSpecialGameButton = button.id.startsWith('special-game-button-');
+    const isGameListButton = button.classList.contains('game-list-button'); 
     const isTopRightButton = button.id === 'top-right-button';
     const isGithubButton = button.id === 'github-button';
+    const isBottomRightGithubButton = button.id === 'bottom-right-github-button';
 
     if (button.textContent === 'X' && button.closest('.popup-container')) {
         return;
     }
 
-    if (!isStyledButton && !isSpecialGameButton && !isTopRightButton && !isGithubButton) {
+    if (!isStyledButton && !isGameListButton && !isTopRightButton && !isGithubButton && !isBottomRightGithubButton) { 
         return;
     }
 
@@ -623,9 +655,9 @@ function handleButtonMouseLeave(e) {
         return;
     }
 
-    if (isSpecialGameButton) {
+    if (isGameListButton) { 
         button.style.transform = 'translateY(0) perspective(500px) rotateX(0) rotateY(0)';
-    } else if (isStyledButton || isTopRightButton || isGithubButton) {
+    } else if (isStyledButton || isTopRightButton || isGithubButton || isBottomRightGithubButton) {
         button.style.transform = 'perspective(500px) rotateX(0) rotateY(0)';
     }
 }
