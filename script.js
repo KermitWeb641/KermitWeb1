@@ -346,7 +346,10 @@ window.addEventListener('load', () => {
 
     // This call is intended to cloak the main page by opening it within an iframe in a new tab,
     // and then redirecting the original tab.
-    openInGameWindowViaIframe("Kermit Web", window.location.href, true);
+    // Only run this self-cloaking if the current window is the top-level window.
+    if (window.self === window.top) {
+        openInGameWindowViaIframe("Kermit Web", window.location.href, true);
+    }
 
     const savedColor = localStorage.getItem('buttonGlowColor');
     if (savedColor) {
