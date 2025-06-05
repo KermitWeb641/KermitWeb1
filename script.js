@@ -35,6 +35,7 @@ const darkModeToggle = document.getElementById('dark-mode-toggle');
 const saveSettingsButton = document.getElementById('save-settings-button');
 const loadSettingsButton = document.getElementById('load-settings-button');
 const loadSettingsInput = document.getElementById('load-settings-input');
+const loadingScreen = document.getElementById('loading-screen'); // Added loading screen element
 
 let lastFrameTime = performance.now();
 let frameCount = 0;
@@ -340,6 +341,9 @@ const openInGameWindowViaIframe = (name, url, redirectOriginal = true) => {
 };
 
 window.addEventListener('load', () => {
+    // Add loading-active class to body to prevent scrolling
+    document.body.classList.add('loading-active');
+
     // This call is intended to cloak the main page by opening it within an iframe in a new tab,
     // and then redirecting the original tab.
     openInGameWindowViaIframe("Kermit Web", window.location.href, true);
@@ -402,6 +406,21 @@ window.addEventListener('load', () => {
     startPingMeasurement();
     requestAnimationFrame(updateFPS);
     updateVisitorCount();
+
+    // Hide loading screen after a short delay
+    if (loadingScreen) {
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            document.body.classList.remove('loading-active'); // Re-enable scrolling
+
+            // Optional: Remove the loading screen from DOM after transition
+            loadingScreen.addEventListener('transitionend', () => {
+                if (loadingScreen.classList.contains('hidden') && loadingScreen.parentNode) {
+                    loadingScreen.parentNode.removeChild(loadingScreen);
+                }
+            });
+        }, 100); // Short delay to allow initial rendering and script execution
+    }
 });
 
 if (glowColorPicker) {
