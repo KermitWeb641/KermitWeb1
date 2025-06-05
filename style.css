@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Ubuntu&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Ubuntu+Mono&display=swap');
+
+:root {
+  --glow-color: #00ffff; /* Default cyan for spinner */
+  --glow-color-rgb: 0, 255, 255; /* Default cyan RGB */
+  --glow-color-darker: #00cccc; /* A slightly darker cyan as default */
+}
+
 body {
     margin: 0;
     overflow-x: hidden;
@@ -10,6 +17,57 @@ body {
     align-items: center;
     min-height: 100vh;
     font-size: 1.1em;
+}
+
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #18181b; /* Dark background, e.g., zinc-900 */
+  z-index: 10000; /* Ensure it's on top of everything */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out 0s; /* Ensure visibility transitions with opacity */
+  font-family: 'Ubuntu', sans-serif;
+}
+
+#loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* Allow interaction with underlying content after hiding */
+  transition: opacity 0.5s ease-out, visibility 0s ease-out 0.5s; /* Delay visibility change until opacity is 0 */
+}
+
+.loading-spinner {
+  border: 8px solid #3f3f46; /* zinc-700 for the track */
+  border-top: 8px solid var(--glow-color); /* Use theme glow color for spinner active part */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  color: #e4e4e7; /* zinc-200 for text */
+  font-size: 1.5em;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Optional: Prevent body scroll while loading screen is active */
+body.loading-active {
+  overflow: hidden;
 }
 
 #dark-mode-glow {
