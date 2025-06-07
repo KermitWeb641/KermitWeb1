@@ -1,4 +1,7 @@
-export function initTheme(themeButton, themeSidebar, backgroundVideo, settingsSidebar, spotifyIframe) {
+import { showNotification } from "./ui.js"; // Import showNotification
+// Removed loadCurrentPlaylist import from music.js, will be passed as parameter
+
+export function initTheme(themeButton, themeSidebar, backgroundVideo, spotifyIframe, loadCurrentPlaylistFn) {
 
     // Theme data: [title, thumbnail_url, video_url, optional_spotify_url]
     const themes = [
@@ -14,59 +17,35 @@ export function initTheme(themeButton, themeSidebar, backgroundVideo, settingsSi
         ["Oddish x Arcanine", "https://motionbgs.com/i/c/960x540/media/183/arcanine-and-oddish.jpg", "https://motionbgs.com/media/183/arcanine-and-oddish.960x540.mp4"]
     ];
 
-    const themeMessageContainer = document.getElementById('theme-message-container');
-
-    function showThemeMessage(message) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('theme-message');
-        messageElement.textContent = message;
-
-        // Append to container and immediately trigger the 'show' class for animation
-        themeMessageContainer.appendChild(messageElement);
-        requestAnimationFrame(() => {
-            messageElement.classList.add('show');
-        });
-
-        // Hide the message after 3 seconds
-        setTimeout(() => {
-            messageElement.classList.remove('show');
-            // Remove the element after the transition
-            messageElement.addEventListener('transitionend', () => {
-                 if (messageElement.parentNode) {
-                    messageElement.parentNode.removeChild(messageElement);
-                 }
-            });
-        }, 3000); // Adjust duration as needed
-    }
-
     themes.forEach(theme => {
         const newThemeOption = document.createElement('div');
         newThemeOption.classList.add('theme-option');
         newThemeOption.title = theme[0];
         newThemeOption.innerHTML = `<img src="${theme[1]}">`;
         newThemeOption.addEventListener('click', function() {
-            showThemeMessage(`Applying theme: ${theme[0]}`); // Show message on click
-            backgroundVideo.innerHTML = `<source src="${theme[2]}" type="video/mp4">Your browser does not support the video tag.`;
-            backgroundVideo.load();
+            showNotification(`Theme '${theme[0]}' applied.`, 3000); // Use imported showNotification
+            if (backgroundVideo) { // Check if backgroundVideo element exists
+                backgroundVideo.innerHTML = `<source src="${theme[2]}" type="video/mp4">Your browser does not support the video tag.`;
+                backgroundVideo.load();
+            }
             localStorage.setItem('backgroundVideoUrl', theme[2]);
 
-            // Apply theme playlist only if no custom playlist is set
-            if (!localStorage.getItem('customPlaylistUrl') && theme[3]) {
-                 if (spotifyIframe) {
-                    spotifyIframe.src = theme[3];
-                    localStorage.setItem('themePlaylistUrl', theme[3]);
-                 }
-            } else if (!localStorage.getItem('customPlaylistUrl') && !theme[3]) {
-                 // If no custom playlist and theme has no playlist, remove theme playlist from storage
-                 localStorage.removeItem('themePlaylistUrl');
+            // Apply theme playlist
+            if (theme[3]) { // If theme has a playlist
+                localStorage.setItem('themePlaylistUrl', theme[3]);
+                // Custom URL, if set, will still take precedence due to logic in loadCurrentPlaylistFn
+            } else { // Theme does not have a playlist
+                localStorage.removeItem('themePlaylistUrl');
+            }
+            // Always call loadCurrentPlaylistFn to re-evaluate (custom might override, or default might be needed)
+            if (typeof loadCurrentPlaylistFn === 'function') {
+                loadCurrentPlaylistFn();
+            } else {
+                console.warn('loadCurrentPlaylistFn is not a function in initTheme');
             }
         });
         if(themeSidebar) {
             themeSidebar.appendChild(newThemeOption);
         }
     });
-
-    function getBackgroundVideo() {
-        return localStorage.getItem('backgroundVideoUrl');
-    }
 }
