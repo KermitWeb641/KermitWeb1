@@ -2,7 +2,7 @@
  * Manages user settings including glow, background video, music, and save/load functionality.
  */
 
-import { applyGlowSettings, applyVideoBackground } from "./ui.js"; // Import functions from ui.js
+import { applyGlowSettings, applyVideoBackground, showNotification } from "./ui.js"; // Import functions from ui.js
 import { loadCurrentPlaylist } from "./music.js"; // Import function from music.js
 
 // Setting Element references (will be passed during initialization)
@@ -143,6 +143,19 @@ function applyLoadedSettings(settings) {
         localStorage.setItem('backgroundVideoUrl', settings.backgroundVideoUrl);
     }
 
+    if (settings.darkModeEnabled !== undefined && document.getElementById('dark-mode-toggle')) { // Check if dark mode toggle exists
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.checked = settings.darkModeEnabled;
+        if (document.body) { // Ensure body exists
+            if (settings.darkModeEnabled) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+        localStorage.setItem('darkModeEnabled', settings.darkModeEnabled);
+    }
+
     if (settings.customPlaylistUrl !== undefined && customPlaylistInput) {
         if (settings.customPlaylistUrl) {
             localStorage.setItem('customPlaylistUrl', settings.customPlaylistUrl);
@@ -166,28 +179,17 @@ function applyLoadedSettings(settings) {
         localStorage.setItem('musicBarHidden', isHidden);
     }
 
-     // Optional: Add a message indicating settings were loaded
-     const themeMessageContainer = document.getElementById('theme-message-container');
-     if (themeMessageContainer) {
-         const messageElement = document.createElement('div');
-         messageElement.classList.add('theme-message');
-         messageElement.textContent = "Settings loaded successfully!";
-         themeMessageContainer.appendChild(messageElement);
-         requestAnimationFrame(() => messageElement.classList.add('show'));
-         setTimeout(() => {
-             messageElement.classList.remove('show');
-             messageElement.addEventListener('transitionend', () => {
-                  if (messageElement.parentNode) messageElement.parentNode.removeChild(messageElement);
-             });
-         }, 3000);
-     }
+     // Use the centralized showNotification function
+     showNotification("Settings loaded successfully!", 3000);
 }
 
 // Saves current settings to a JSON file
 function saveSettings() {
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
     const settings = {
         glowColor: glowColorPicker ? glowColorPicker.value : '#00ffff',
         glowEnabled: glowToggle ? glowToggle.checked : true,
+        darkModeEnabled: darkModeToggle ? darkModeToggle.checked : false,
         backgroundVideoUrl: backgroundVideo ? backgroundVideo.querySelector('source')?.src : defaultBackgroundVideoUrl,
         musicBarHidden: bottomBar ? bottomBar.classList.contains('hidden') : false,
         customPlaylistUrl: customPlaylistInput ? customPlaylistInput.value : ''
