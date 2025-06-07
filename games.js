@@ -1,3 +1,5 @@
+import { showNotification } from "./ui.js";
+
 export function initGames(games, specialGameButtons) {
     // Special Game Button Functionality (Now accepting an array of buttons)
     specialGameButtons.forEach(button => {
@@ -28,9 +30,9 @@ export function openGameInNewTab(gameName, gameUrl, redirectOriginalTabOnSuccess
             } catch (e) {
                 console.warn("Could not redirect to Google Classroom. This might be due to popup blocker interactions or browser security policies when the original tab is not focused.", e);
             }
-        } else if (!newTab && redirectOriginalTabOnSuccess) {
-            // If popup was blocked, don't attempt redirect of original tab.
-            // The browser's popup blocker notification is sufficient.
+        } else if (!newTab) {
+            // If popup was blocked
+            showNotification("Pop-up blocked! Please allow pop-ups for this site to open links in a new tab.", 7000);
         }
         return; // Exit after handling direct open
     }
@@ -64,7 +66,10 @@ export function openGameInNewTab(gameName, gameUrl, redirectOriginalTabOnSuccess
                 </style>
             </head>
             <body>
-                <iframe src="${gameUrl}" allow="fullscreen; autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                <iframe src="${gameUrl}" 
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-orientation-lock allow-presentation allow-modals allow-popups allow-popups-to-escape-sandbox" 
+                        allow="fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture" 
+                        allowfullscreen></iframe>
             </body>
             </html>
         `);
@@ -78,8 +83,10 @@ export function openGameInNewTab(gameName, gameUrl, redirectOriginalTabOnSuccess
             }
         }
     } else {
-        // Do nothing if popup is blocked, do not show an alert.
-        // The browser's built-in popup blocker notification is sufficient.
+        // Pop-up was blocked
+        showNotification("Pop-up blocked! Please allow pop-ups for this site to enable tab cloaking.", 7000);
+        // The browser's built-in popup blocker notification is sufficient for technical feedback,
+        // but this custom message reinforces the importance for the site's cloaking functionality.
     }
 }
 
@@ -218,7 +225,7 @@ export const gameData = {
     'chibi knight': 'https://k-web-topaz.vercel.app/games/chibiknight/index.html',
     'cluster rush': 'https://k-web-topaz.vercel.app/games/clusterrush/index.html',
     'doodle defender': 'https://k-web-topaz.vercel.app/games/doodledefender/index.html',
-    'learn to fly 2': 'https://k-web-topaz.vercel.app/games/learntofly2/index.html',
+    'learn to fly 2': 'https://k-web-topaz.vercel.app/games/learntofly2/index.htm',
     'papas scooperia': 'https://k-web-topaz.vercel.app/games/papasscooperia/index.html',
     'papas sushiria': 'https://k-web-topaz.vercel.app/games/papassushiria/index.html',
     'papas wingeria': 'https://k-web-topaz.vercel.app/games/papaswingeria/index.html',
@@ -292,7 +299,7 @@ export const gameData = {
     'golden sun': 'https://k-web-topaz.vercel.app/games/goldensun/index.html',
     'metroid fusion': 'https://k-web-topaz.vercel.app/games/metroidfusion/index.html',
     'dbz supersonic warriors': 'https://k-web-topaz.vercel.app/games/dbzsupersonicwarriors/index.html',
-    'wario land 4': 'https://k-web-topaz.vercel.app/games/warioland4/index.html',
+    'warioland 4': 'https://k-web-topaz.vercel.app/games/warioland4/index.html',
     'duck life 5': 'https://k-web-topaz.vercel.app/games/ducklife5/index.html',
     'learn to fly 3': 'https://k-web-topaz.vercel.app/games/learntofly3/index.html',
     'bloxors': 'https://k-web-topaz.vercel.app/games/bloxors/index.html',
