@@ -19,57 +19,6 @@ body {
     font-size: 1.1em;
 }
 
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #18181b; /* Dark background, e.g., zinc-900 */
-  z-index: 10000; /* Ensure it's on top of everything */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.5s ease-out, visibility 0.5s ease-out 0s; /* Ensure visibility transitions with opacity */
-  font-family: 'Ubuntu', sans-serif;
-}
-
-#loading-screen.hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none; /* Allow interaction with underlying content after hiding */
-  transition: opacity 0.5s ease-out, visibility 0s ease-out 0.5s; /* Delay visibility change until opacity is 0 */
-}
-
-.loading-spinner {
-  border: 8px solid #3f3f46; /* zinc-700 for the track */
-  border-top: 8px solid var(--glow-color); /* Use theme glow color for spinner active part */
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-.loading-text {
-  color: #e4e4e7; /* zinc-200 for text */
-  font-size: 1.5em;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Optional: Prevent body scroll while loading screen is active */
-body.loading-active {
-  overflow: hidden;
-}
-
 #dark-mode-glow {
   position: fixed;
   top: 0;
@@ -176,11 +125,11 @@ body.dark-mode #title-background-image.no-glow {
 }
 
 body.dark-mode #background-video {
-    filter: grayscale(100%) brightness(50%);
+    filter: grayscale(100%) brightness(65%);
 }
 
 body.dark-mode #title-background-image {
-    filter: grayscale(100%) brightness(50%) drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
+    filter: grayscale(100%) brightness(65%) drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
 }
 
 #main-content-container {
@@ -219,13 +168,13 @@ body.dark-mode #title-background-image {
 }
 
 body.dark-mode #search-input {
-    background-color: rgba(30, 30, 30, 0.85);
-    color: #b0b0b0;
-    border-color: #4a4a4a;
+    background-color: rgba(50, 50, 50, 0.85);
+    color: #d0d0d0;
+    border-color: #6a6a6a;
 }
 
 body.dark-mode #search-input::placeholder {
-    color: #777;
+    color: #999;
 }
 
 #search-input:focus {
@@ -254,8 +203,8 @@ body.dark-mode #search-input:focus {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #ccc;
+    background-color: rgba(40, 40, 40, 0.97);
+    border: 1px solid #585858;
     border-top: none;
     border-radius: 0 0 5px 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -267,8 +216,8 @@ body.dark-mode #search-input:focus {
 }
 
 body.dark-mode #suggestions-container {
-    background-color: rgba(20, 20, 20, 0.97);
-    border-color: #383838;
+    background-color: rgba(40, 40, 40, 0.97);
+    border-color: #585858;
 }
 
 .suggestion {
@@ -280,8 +229,8 @@ body.dark-mode #suggestions-container {
 }
 
 body.dark-mode .suggestion {
-    color: #a0a0a0;
-    border-bottom-color: #383838;
+    color: #c0c0c0;
+    border-bottom-color: #585858;
 }
 
 .suggestion:last-child {
@@ -293,7 +242,7 @@ body.dark-mode .suggestion {
 }
 
 body.dark-mode .suggestion:hover {
-    background-color: #2c2c2c;
+    background-color: #4c4c4c;
 }
 
 .styled-button {
@@ -317,7 +266,7 @@ body.dark-mode .suggestion:hover {
 body.dark-mode .styled-button,
 body.dark-mode #top-right-button,
 body.dark-mode #github-button {
-    filter: grayscale(70%) brightness(60%);
+    filter: grayscale(70%) brightness(75%);
 }
 
 #settings-button {
@@ -635,14 +584,14 @@ body.dark-mode #github-button {
     border-radius: 8px;
     transition: transform 0.3s ease;
     font-family: Ubuntu;
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: rgba(45, 45, 45, 0.3);
     font-size: 1.1em;
 }
 
 body.dark-mode #game-count {
-    background-color: rgba(15, 15, 15, 0.7);
-    color: #999;
-    border-color: #333;
+    background-color: rgba(45, 45, 45, 0.7);
+    color: #bbb;
+    border-color: #555;
 }
 
 #game-count:hover {
@@ -656,16 +605,16 @@ body.dark-mode #game-count {
     border-radius: 8px;
     transition: transform 0.3s ease;
     font-family: Ubuntu;
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: rgba(45, 45, 45, 0.3);
     font-size: 1.1em;
     min-width: 120px;
     text-align: center;
 }
 
 body.dark-mode #ping-counter {
-    background-color: rgba(15, 15, 15, 0.7);
-    color: #999;
-    border-color: #333;
+    background-color: rgba(45, 45, 45, 0.7);
+    color: #bbb;
+    border-color: #555;
 }
 
 #ping-counter:hover {
@@ -679,16 +628,16 @@ body.dark-mode #ping-counter {
     border-radius: 8px;
     transition: transform 0.3s ease;
     font-family: Ubuntu;
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: rgba(45, 45, 45, 0.3);
     font-size: 1.1em;
     min-width: 100px;
     text-align: center;
 }
 
 body.dark-mode #fps-counter {
-    background-color: rgba(15, 15, 15, 0.7);
-    color: #999;
-    border-color: #333;
+    background-color: rgba(45, 45, 45, 0.7);
+    color: #bbb;
+    border-color: #555;
 }
 
 #fps-counter:hover {
@@ -711,16 +660,16 @@ body.dark-mode #fps-counter {
     border-radius: 8px;
     transition: transform 0.3s ease;
     font-family: Ubuntu;
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: rgba(45, 45, 45, 0.3);
     font-size: 1.1em;
     min-width: 120px;
     text-align: center;
 }
 
 body.dark-mode #visitor-counter {
-    background-color: rgba(15, 15, 15, 0.7);
-    color: #999;
-    border-color: #333;
+    background-color: rgba(45, 45, 45, 0.7);
+    color: #bbb;
+    border-color: #555;
 }
 
 #visitor-counter:hover {
@@ -746,19 +695,18 @@ body.dark-mode #visitor-counter {
 .game-list-button {
     background-color: black;
     border: 2px solid white;
-    padding: 10px;
-    border-radius: 15px;
+    padding: 8px;
+    border-radius: 12px;
     cursor: pointer;
     font-family: Ubuntu;
     z-index: 20;
-    opacity: 0;
-    transform: translateY(50px);
+    opacity: 1;
     transform-style: preserve-3d;
     perspective: 500px;
-    transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.3s ease, filter 0.5s ease;
+    transition: transform 0.5s ease, box-shadow 0.3s ease, filter 0.5s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    width: 200px;
-    height: 200px;
+    width: 170px;
+    height: 170px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -768,7 +716,7 @@ body.dark-mode #visitor-counter {
 }
 
 body.dark-mode .game-list-button img {
-    filter: brightness(60%);
+    filter: brightness(75%);
 }
 
 body.dark-mode .game-list-button:hover img {
@@ -835,10 +783,10 @@ body.dark-mode .game-list-button:hover img {
 body.dark-mode #unblockers-heading {
     color: #e0e0e0;
     text-shadow:
-        -1px -1px 0 #1a1a1a,
-        1px -1px 0 #1a1a1a,
-        -1px 1px 0 #1a1a1a,
-        1px 1px 0 #1a1a1a,
+        -1px -1px 0 #3a3a3a,
+        1px -1px 0 #3a3a3a,
+        -1px 1px 0 #3a3a3a,
+        1px 1px 0 #3a3a3a,
         2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
