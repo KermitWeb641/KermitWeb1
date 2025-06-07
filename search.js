@@ -25,12 +25,12 @@ export function initSearch(games) {
             const searchTerm = searchInput.value.trim().toLowerCase();
             // Check for exact match first
             if (games[searchTerm]) {
-                openGameInNewTab(searchTerm, games[searchTerm]); // Use imported function
+                openGameInNewTab(searchTerm, games[searchTerm], false); // Pass false
             } else {
                 // If no exact match, find games that include the term and open the first one
                 const matchingGames = Object.keys(games).filter(game => game.includes(searchTerm));
                 if (matchingGames.length > 0) {
-                    openGameInNewTab(matchingGames[0], games[matchingGames[0]]); // Use imported function, pass game name and url
+                    openGameInNewTab(matchingGames[0], games[matchingGames[0]], false); // Pass false
                 }
             }
             // Hide suggestions after pressing Enter
@@ -56,7 +56,7 @@ export function initSearch(games) {
                 suggestionDiv.addEventListener('click', function() {
                     searchInput.value = suggestion;
                     suggestionsContainer.style.display = 'none';
-                    openGameInNewTab(suggestion, games[suggestion]); // Use imported function, pass game name and url
+                    openGameInNewTab(suggestion, games[suggestion], false); // Pass false
                 });
                 suggestionsContainer.appendChild(suggestionDiv);
             });
