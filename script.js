@@ -1,6 +1,7 @@
 import { initSearch } from "./search.js";
 import { initTheme } from "./theme.js";
 import { initGames, gameData, openGameInNewTab } from "./games.js";
+import { showNotification } from "./ui.js"; // Import for potential direct use, though not primary focus now
 
 const backgroundVideo = document.getElementById('background-video');
 const themeSidebar = document.getElementById('theme-sidebar');
@@ -35,7 +36,7 @@ const darkModeToggle = document.getElementById('dark-mode-toggle');
 const saveSettingsButton = document.getElementById('save-settings-button');
 const loadSettingsButton = document.getElementById('load-settings-button');
 const loadSettingsInput = document.getElementById('load-settings-input');
-const loadingScreen = document.getElementById('loading-screen'); // Added loading screen element
+// const loadingScreen = document.getElementById('loading-screen'); // Removed loading screen element
 
 let lastFrameTime = performance.now();
 let frameCount = 0;
@@ -60,6 +61,7 @@ const fadeDuration = 500;
 const defaultSpotifySrc = 'https://open.spotify.com/embed/playlist/4rDW63aN3C3BGKy1FVHDyG?utm_source=generator&repeat=true';
 
 function changeTitleBackgroundImage() {
+    if (!titleBackgroundImage) return; // Guard against null
     titleBackgroundImage.style.opacity = '0';
 
     setTimeout(() => {
@@ -70,7 +72,9 @@ function changeTitleBackgroundImage() {
     }, fadeDuration);
 }
 
-setInterval(changeTitleBackgroundImage, slideshowInterval);
+if (titleBackgroundImage && slideshowImages.length > 0) {
+    setInterval(changeTitleBackgroundImage, slideshowInterval);
+}
 
 gameCountDisplay.textContent = `Total Games: ${Object.keys(gameData).length}`;
 
@@ -92,27 +96,6 @@ function formatSpotifyEmbedUrl(playlistUrl) {
         console.error("Invalid Spotify playlist URL format:", playlistUrl, e);
     }
     return null;
-}
-
-function showThemeMessage(message) {
-    const themeMessageContainer = document.getElementById('theme-message-container');
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('theme-message');
-    messageElement.textContent = message;
-
-    themeMessageContainer.appendChild(messageElement);
-    requestAnimationFrame(() => {
-        messageElement.classList.add('show');
-    });
-
-    setTimeout(() => {
-        messageElement.classList.remove('show');
-        messageElement.addEventListener('transitionend', () => {
-            if (messageElement.parentNode) {
-                messageElement.parentNode.removeChild(messageElement);
-            }
-        });
-    }, 3000);
 }
 
 function loadCurrentPlaylist() {
@@ -158,7 +141,7 @@ function loadCurrentPlaylist() {
     }
 }
 
-initTheme(themeButton, themeSidebar, backgroundVideo, spotifyIframe, showThemeMessage, loadCurrentPlaylist);
+initTheme(themeButton, themeSidebar, backgroundVideo, spotifyIframe, loadCurrentPlaylist); // Pass loadCurrentPlaylist
 initSearch(gameData);
 
 initGames(gameData, gameListButtons); 
@@ -233,8 +216,10 @@ function applyLoadedSettings(settings) {
         localStorage.setItem('buttonGlowEnabled', settings.glowEnabled);
     }
     if (settings.backgroundVideoUrl) {
-        backgroundVideo.innerHTML = `<source src="${settings.backgroundVideoUrl}" type="video/mp4">Your browser does not support the video tag.`;
-        backgroundVideo.load();
+        if (backgroundVideo) { // Ensure backgroundVideo element exists
+            backgroundVideo.innerHTML = `<source src="${settings.backgroundVideoUrl}" type="video/mp4">Your browser does not support the video tag.`;
+            backgroundVideo.load();
+        }
         localStorage.setItem('backgroundVideoUrl', settings.backgroundVideoUrl);
     }
 
@@ -313,15 +298,18 @@ function startPingMeasurement() {
 }
 
 function updateVisitorCount() {
-    if (!visitorCounterElement) return;
-    let visitorCount = parseInt(localStorage.getItem('visitorCountKermitWeb') || '0');
+    // Visitor counter was removed, so this function might be obsolete or need repurposing
+    // For now, let's ensure it doesn't cause errors if visitorCounterElement is null
+    if (!visitorCounterElement) return; 
+    // Original logic:
+    // let visitorCount = parseInt(localStorage.getItem('visitorCountKermitWeb') || '0');
+    // visitorCount++;
+    // localStorage.setItem('visitorCountKermitWeb', visitorCount.toString());
+    // visitorCounterElement.textContent = `Visitors: ${visitorCount}`;
     
-    // Only increment if this is a new session or the first visit in a while
-    // For simplicity, we'll increment on every page load for now.
-    // A more robust solution would involve session tracking or server-side logic.
-    visitorCount++;
-    localStorage.setItem('visitorCountKermitWeb', visitorCount.toString());
-    visitorCounterElement.textContent = `Visitors: ${visitorCount}`;
+    // If visitorCounterElement is gone, we can comment out or remove the display logic
+    // For instance, if the element was removed from HTML:
+    // visitorCounterElement.textContent = `Visitors: N/A`; // Or just remove this line
 }
 
 function toggleSidebar(sidebarToToggle, otherSidebars) {
@@ -342,7 +330,7 @@ const openInGameWindowViaIframe = (name, url, redirectOriginal = true) => {
 
 window.addEventListener('load', () => {
     // Add loading-active class to body to prevent scrolling
-    document.body.classList.add('loading-active');
+    // document.body.classList.add('loading-active'); // Removed
 
     // This call is intended to cloak the main page by opening it within an iframe in a new tab,
     // and then redirecting the original tab.
@@ -411,19 +399,7 @@ window.addEventListener('load', () => {
     updateVisitorCount();
 
     // Hide loading screen after a short delay
-    if (loadingScreen) {
-        setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-            document.body.classList.remove('loading-active'); // Re-enable scrolling
-
-            // Optional: Remove the loading screen from DOM after transition
-            loadingScreen.addEventListener('transitionend', () => {
-                if (loadingScreen.classList.contains('hidden') && loadingScreen.parentNode) {
-                    loadingScreen.parentNode.removeChild(loadingScreen);
-                }
-            });
-        }, 100); // Short delay to allow initial rendering and script execution
-    }
+    // Removed loading screen logic
 });
 
 if (glowColorPicker) {
@@ -522,14 +498,9 @@ if (customPlaylistInput && setPlaylistButton) {
     });
 }
 
-gameListButtons.forEach((button, index) => { 
-    setTimeout(() => {
-        button.classList.add('loaded');
-
-        button.addEventListener('mousemove', handleButtonMouseMove);
-        button.addEventListener('mouseleave', handleButtonMouseLeave);
-
-    }, 100 * index); 
+gameListButtons.forEach((button) => {
+    button.addEventListener('mousemove', handleButtonMouseMove);
+    button.addEventListener('mouseleave', handleButtonMouseLeave);
 });
 
 if (topRightButton) {
