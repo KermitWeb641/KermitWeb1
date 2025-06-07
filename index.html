@@ -1,349 +1,274 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Classroom_Logo.png" type="image/png">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    h2.textstyle {
-      font-family: Ubuntu
+/**
+ * Manages the user interface elements, visual effects, and sidebars.
+ */
+
+// UI Element references (will be passed during initialization)
+let themeSidebar;
+let settingsSidebar;
+let themeButton;
+let settingsButton;
+let topRightButton;
+let specialGameButtons; // This will be re-selected on init
+let styledButtons; // This will be re-selected on init
+let titleBackgroundImage;
+let backgroundVideo;
+let musicToggleButton;
+let bottomBar;
+
+// Slideshow variables
+const slideshowImages = [
+    'https://i0.wp.com/615film.com//wp-content/uploads/2017/10/Feature-Image.jpg?ssl=1',
+    'https://pixeldie.com/wp-content/uploads/2020/12/20201213195528_1.jpg?w=816',
+    'https://storymuseum.s3-assets.com/_1023x682_crop_center-center_80_none/1001_Undertale.png',
+    'https://fnf-online.org/data/image/posts/fnf-online-game-image2.jpg',
+    'https://cdn.mobygames.com/covers/11288398-pizza-tower-windows-front-cover.jpg',
+    'https://images4.alphacoders.com/659/659657.jpg',
+    'https://pbs.twimg.com/media/Cy1Em3QVEAA_e2i.jpg:large',
+    'https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=1200,height=1200,fit=cover,f=png/99e090d154caf30f3625df7e456d5984.png', // Stickman Hook
+    'https://drifthunters2.io/data/image/favicon.png', // Drift Hunters
+    'https://m.media-amazon.com/images/M/MV5BNjQzMDlkNDctYmE3Yi00ZWFiLTlmOWYtMjI4MzQ4Y2JhZjY2XkEyXkFqcGc@._V1_.jpg', // Minecraft
+    'https://m.media-amazon.com/images/M/MV5BNjhmNzg4ZTMtNWVhMy00NjgwLThhZjUtZjY4ZmU2YTVhYjUwXkEyXkFqcGc@._V1_QL75_UY281_CR6,0,190,281_.jpg', // Super Mario 64
+    'https://assetsio.gnwcdn.com/paper-mario-the-thousand-year-door-remake-header.png?width=1200&height=630&fit=crop&enable=upscale&auto=webp', // Paper Mario
+    'https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=314,height=314,fit=cover,f=auto/e521bbbf13a6480b60d75421e7edc8d8d0e1edadaccd7d4343862a74088a.png', // Rocket Soccer
+    'https://a.silvergames.com/j/b/gun-fest.jpg', // Gun Fest
+    'https://nutwg.com/en/wp-content/uploads/sites/2/2024/07/2024-07-05-135225600.webp', // Cluster Rush
+    'https://assets-prd.ignimgs.com/2022/02/28/pokemonstadium-1646017802114.jpg', // Pokemon Stadium
+    'https://upload.wikimedia.org/wikipedia/en/3/3f/Clicker_Heroes_Logo.jpeg', // Clicker Heroes
+    'https://www2.minijuegosgratis.com/v3/games/thumbnails/22727_7_sq.jpg' // RedBall 4
+];
+
+export function initUI(elements) {
+    themeSidebar = elements.themeSidebar;
+    settingsSidebar = elements.settingsSidebar;
+    themeButton = elements.themeButton;
+    settingsButton = elements.settingsButton;
+    topRightButton = elements.topRightButton;
+    specialGameButtons = document.querySelectorAll('.game-list-button'); // Re-select
+    styledButtons = document.querySelectorAll('.styled-button'); // Re-select
+    titleBackgroundImage = elements.titleBackgroundImage;
+    backgroundVideo = elements.backgroundVideo;
+    musicToggleButton = elements.musicToggleButton;
+    bottomBar = elements.bottomBar;
+
+    // Initialize slideshow for title background
+    if (titleBackgroundImage && slideshowImages.length > 0) {
+        setInterval(changeTitleBackgroundImage, slideshowInterval);
     }
-  </style>
-</head>
-<body>
-  <div id="dark-mode-glow"></div>
-  <video id="background-video" autoplay loop muted>
-    <!-- The background video source will be set by script.js -->
-    Your browser does not support the video tag.
-  </video>
 
-  <h1 id="page-title">Kermit Web</h1>
+    // Add mouse move/leave listeners for buttons
+    specialGameButtons.forEach((button, index) => {
+        setTimeout(() => {
+            button.classList.add('loaded');
+            button.addEventListener('mousemove', handleButtonMouseMove);
+            button.addEventListener('mouseleave', handleButtonMouseLeave);
+        }, 100 * index);
+    });
 
-  <!-- Add the background rectangle behind the slideshow -->
-  <div id="slideshow-background"></div>
-
-  <!-- The background image will now be part of a slideshow -->
-  <img src="https://i0.wp.com/615film.com//wp-content/uploads/2017/10/Feature-Image.jpg?ssl=1" alt="Background image for title" id="title-background-image">
-
-  <button id="settings-button" class="styled-button">settings</button>
-  <button id="theme-button" class="styled-button">themes</button>
-  <button id="music-toggle-button" class="styled-button">hide music</button>
-  <button id="credits-button" class="styled-button">credits</button>
-
-  <button id="github-button" class="styled-button">
-    <img src="https://avatars.githubusercontent.com/u/103917385?s=280&v=4" alt="GitHub Profile" class="main-image">
-  </button>
-
-  <button id="top-right-button" class="styled-button">
-    <img src="https://i.ibb.co/1fvmpQk9/Untitled-Artwork-1.png" alt="New Button" class="main-image">
-    <img src="https://pngimg.com/d/discord_PNG30.png" alt="Discord Logo" class="overlay-image">
-  </button>
-
-  <div id="theme-sidebar">
-    <h2 class="textstyle">themes</h2>
-    <!-- Theme options will be populated here by theme.js -->
-  </div>
-
-  <div id="settings-sidebar">
-    <h2 class="textstyle">settings</h2>
-    <div class="setting-option">
-      <label for="glow-color-picker">Button Glow Color:</label>
-      <input type="color" id="glow-color-picker" value="#00ffff">
-    </div>
-    <div class="setting-option">
-      <label for="glow-toggle" class="switch-label">Button Glow:</label>
-      <label class="switch">
-        <input type="checkbox" id="glow-toggle">
-        <span class="slider round"></span>
-      </label>
-    </div>
-    <div class="setting-option">
-      <label for="dark-mode-toggle" class="switch-label">Dark Mode:</label>
-      <label class="switch">
-        <input type="checkbox" id="dark-mode-toggle">
-        <span class="slider round"></span>
-      </label>
-    </div>
-    <div class="setting-option">
-      <label for="custom-playlist-input">Custom Playlist URL:</label>
-      <input type="text" id="custom-playlist-input" placeholder="Spotify embed URL or share link">
-    </div>
-    <div class="setting-option">
-      <button id="set-playlist-button" class="settings-button">Set Playlist</button>
-    </div>
-    <div class="setting-option">
-      <button id="save-settings-button" class="settings-button">Save Settings</button>
-    </div>
-    <div class="setting-option">
-      <input type="file" id="load-settings-input" accept=".json" style="display: none;">
-      <button id="load-settings-button" class="settings-button">Load Settings</button>
-    </div>
-  </div>
-
-  <div id="credits-sidebar">
-    <h2 class="textstyle">credits</h2>
-    <div class="credit-section">
-      <h3>Main Developer</h3>
-      <p>Kermit</p>
-    </div>
-    <div class="credit-section">
-      <h3>Co-Developers</h3>
-      <p>- OddishMaster</p>
-      <p>- eclipse</p>
-    </div>
-    <div class="credit-section">
-      <h3>Special Thanks</h3>
-      <p>To the open-source community and creators of the libraries used.</p>
-      <p>To you for using Kermit Web!</p>
-    </div>
-    <div class="credit-section">
-      <h3>Assets & Libraries</h3>
-      <p>Fonts: Google Fonts (Ubuntu, Ubuntu Mono)</p>
-      <p>Background Videos & Themes: Sourced from various public CDNs and GX.store mods.</p>
-      <p>Icons: Wikimedia, PNGimg, GitHub avatars.</p>
-    </div>
-  </div>
-
-  <div id="main-content-container">
-    <div id="search-container">
-      <input type="text" id="search-input" placeholder="Search games...">
-
-      <div id="suggestions-container"></div>
-    </div>
-
-    <!-- New container for game count and ping -->
-    <div id="info-bar-container">
-        <p id="game-count">Loading game count...</p>
-        <p id="ping-counter">Ping: --- ms</p>
-        <p id="fps-counter">FPS: --</p>
-    </div>
-
-    <div id="special-game-buttons-container">
-      <button id="special-game-button-1" data-game-url="https://k-web-topaz.vercel.app/games/supersmashbros/index.html" data-game-name="Super Smash Bros." title="Super Smash Bros." class="game-list-button">
-        <img src="https://i.ytimg.com/vi/cTXKd5rT_g4/maxresdefault.jpg" alt="Super Smash Bros.">
-        <span class="game-name-overlay">Super Smash Bros.</span>
-      </button>
-
-      <button id="special-game-button-2" data-game-url="https://k-web-topaz.vercel.app/games/pokemonemerald/index.html" data-game-name="Pokemon Emerald" title="Pokemon Emerald" class="game-list-button">
-        <img src="https://m.exophase.com/retro/games/o/4g1d4.png?77fef2fbd0386ac5de0fd6a6254f4bf1" alt="Pokemon Emerald">
-        <span class="game-name-overlay">Pokemon Emerald</span>
-      </button>
-
-      <button id="special-game-button-3" data-game-url="https://k-web-topaz.vercel.app/games/streetfighter2/index.html" data-game-name="Street Fighter 2" title="Street Fighter 2" class="game-list-button">
-        <img src="https://www.lifewire.com/thmb/e4KO03N7rRnLg7-3BQGi17b6wCw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/35276451461_3a740f2c8b_h-5bff658146e0fb002626425b-9c944609943d451eac3c310e3066ab1c.jpg" alt="Street Fighter 2">
-        <span class="game-name-overlay">Street Fighter 2</span>
-      </button>
-
-      <button id="special-game-button-4" data-game-url="https://k-web-topaz.vercel.app/games/mariokart64/index.html" data-game-name="Mario Kart 64" title="Mario Kart 64" class="game-list-button">
-        <img src="https://upload.wikimedia.org/wikipedia/en/a/a1/Mario_Kart_64.jpg" alt="Mario Kart 64">
-        <span class="game-name-overlay">Mario Kart 64</span>
-      </button>
-
-      <button id="special-game-button-5" data-game-url="https://k-web-topaz.vercel.app/games/cookingmama/index.html" data-game-name="Cooking Mama" title="Cooking Mama" class="game-list-button">
-        <img src="https://i5.walmartimages.com/seo/Cooking-Mama-Sweet-Shop-Crescent-Marketing-Nintendo-3DS-887195000325_01114974-8fb5-4328-838e-04b599c4d2be.07788a2b9534e953e2ff30831fec6a07.jpeg" alt="Cooking Mama">
-        <span class="game-name-overlay">Cooking Mama</span>
-      </button>
-
-      <button id="special-game-button-6" data-game-url="https://k-web-topaz.vercel.app/games/superstarsaga/index.html" data-game-name="Superstar Saga" title="Superstar Saga" class="game-list-button">
-        <img src="https://upload.wikimedia.org/wikipedia/en/6/63/MarioAndLuigiSuperstarSagaGBACoverArtUS.jpg" alt="Superstar Saga">
-        <span class="game-name-overlay">Superstar Saga</span>
-      </button>
-
-      <button id="special-game-button-7" data-game-url="https://k-web-topaz.vercel.app/games/sonicadvance2/index.html" data-game-name="Sonic Advance 2" title="Sonic Advance 2" class="game-list-button">
-        <img src="https://i.ytimg.com/vi/5dvEYVJPH_0/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBcRJ4FXDmB0UC9toNNr_qfHFa1Qw" alt="Sonic Advance 2">
-        <span class="game-name-overlay">Sonic Advance 2</span>
-      </button>
-
-      <button id="special-game-button-8" data-game-url="https://k-web-topaz.vercel.app/games/spirittracks/index.html" data-game-name="Spirit Tracks" title="Spirit Tracks" class="game-list-button">
-        <img src="https://m.media-amazon.com/images/I/812w5pl5foL.jpg" alt="Spirit Tracks">
-        <span class="game-name-overlay">Spirit Tracks</span>
-      </button>
-
-      <button id="special-game-button-9" data-game-url="https://k-web-topaz.vercel.app/games/kirbymassattack/index.html" data-game-name="Kirby Mass Attack" title="Kirby Mass Attack" class="game-list-button">
-        <img src="https://m.media-amazon.com/images/I/817jCiecDYL.jpg" alt="Kirby Mass Attack">
-        <span class="game-name-overlay">Kirby Mass Attack</span>
-      </button>
-
-      <button id="special-game-button-10" data-game-url="https://k-web-topaz.vercel.app/games/animalcrossingwildworld/index.html" data-game-name="Animal Crossing Wild World" title="Animal Crossing Wild World" class="game-list-button">
-        <img src="https://cdn2.steamgriddb.com/grid/ae932f41f09365b23d75c5fb70be15e0.png" alt="Animal Crossing Wild World">
-        <span class="game-name-overlay">Animal Crossing Wild World</span>
-      </button>
-
-      <button id="special-game-button-11" data-game-url="https://k-web-topaz.vercel.app/games/supermariobros3/index.html" data-game-name="Super Mario Bros 3" title="Super Mario Bros 3" class="game-list-button">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDlGHbMNvPYnCqiTh8mUY_6bJfjBh88Fubgg&s" alt="Super Mario Bros 3">
-        <span class="game-name-overlay">Super Mario Bros 3</span>
-      </button>
-      <button id="special-game-button-12" data-game-url="https://k-web-topaz.vercel.app/games/slope/index.html" data-game-name="Slope" title="Slope" class="game-list-button">
-        <img src="https://play-lh.googleusercontent.com/uJn2i9h7KxYQarC_c3K4qH6o7gLtflFnhD_dN14MNkzHJ1NeNFzCL69jpB5mT0vCoQs" alt="Slope">
-        <span class="game-name-overlay">Slope</span>
-      </button>
-      <button id="special-game-button-13" data-game-url="https://k-web-topaz.vercel.app/games/cookieclicker/index.html" data-game-name="Cookie Clicker" title="Cookie Clicker" class="game-list-button">
-        <img src="https://play-lh.googleusercontent.com/Z1MOuuiD05ZN5LkVmMEvKF0mqAc-FknaQ2j8s4dZiO-LSPQX4EEA3RVJdlQEtxe96ok" alt="Cookie Clicker">
-        <span class="game-name-overlay">Cookie Clicker</span>
-      </button>
-      <button id="special-game-button-14" data-game-url="https://k-web-topaz.vercel.app/games/crossy/index.html" data-game-name="Crossy Road" title="Crossy Road" class="game-list-button">
-        <img src="https://images.launchbox-app.com//79c9cc6a-9c10-48a2-ae21-50644daf8995.jpg" alt="Crossy Road">
-        <span class="game-name-overlay">Crossy Road</span>
-      </button>
-      <button id="special-game-button-15" data-game-url="https://k-web-topaz.vercel.app/games/fnf/index.html" data-game-name="Friday Night Funkin'" title="Friday Night Funkin'" class="game-list-button">
-        <img src="https://www.fnfgo.com/wp-content/uploads/2021/08/friday-night-funkin.jpg" alt="Friday Night Funkin'">
-        <span class="game-name-overlay">Friday Night Funkin'</span>
-      </button>
-      <button id="special-game-button-16" data-game-url="https://k-web-topaz.vercel.app/games/skibidi1v100/index.html" data-game-name="Skibidi Toilet 1v100" title="Skibidi Toilet 1v100" class="game-list-button">
-        <img src="https://kbhgames.com/wp-content/uploads/2023/08/You-vs-100-Skibidi-Toilets.jpg" alt="Skibidi Toilet 1v100">
-        <span class="game-name-overlay">Skibidi Toilet 1v100</span>
-      </button>
-      <button id="special-game-button-17" data-game-url="https://k-web-topaz.vercel.app/games/gdlite/index.html" data-game-name="Geometry Dash" title="Geometry Dash" class="game-list-button">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/Logo_of_Geometry_Dash.svg/800px-Logo_of_Geometry_Dash.svg.png" alt="Geometry Dash">
-        <span class="game-name-overlay">Geometry Dash</span>
-      </button>
-      <button id="special-game-button-18" data-game-url="https://k-web-topaz.vercel.app/games/pizzatower/" data-game-name="Pizza Tower" title="Pizza Tower" class="game-list-button">
-        <img src="https://sm.ign.com/ign_il/cover/p/pizza-towe/pizza-tower_gngf.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp" alt="Pizza Tower">
-        <span class="game-name-overlay">Pizza Tower</span>
-      </button>
-      <button id="special-game-button-19" data-game-url="https://k-web-topaz.vercel.app/games/thebindingofisaac/index.html" data-game-name="The Binding of Isaac" title="The Binding of Isaac" class="game-list-button">
-        <img src="https://upload.wikimedia.org/wikipedia/en/f/fa/Binding_of_isaac_header.jpg" alt="The Binding of Isaac">
-        <span class="game-name-overlay">The Binding of Isaac</span>
-      </button>
-      <button id="special-game-button-20" data-game-url="https://k-web-topaz.vercel.app/games/stickmanhook/index.html" data-game-name="Stickman Hook" title="Stickman Hook" class="game-list-button">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTac7pXgdjXcZFfDk-JNK-BHVH13PJrzMzMQe5Te-IG1E2uU3vYir-Z3-YWxlTR1fsiTQk&usqp=CAU" alt="Stickman Hook">
-        <span class="game-name-overlay">Stickman Hook</span>
-      </button>
-      <button id="special-game-button-21" data-game-url="https://k-web-topaz.vercel.app/games/drifthunters/index.html" data-game-name="Drift Hunters" title="Drift Hunters" class="game-list-button">
-        <img src="https://drifthunters2.io/data/image/favicon.png" alt="Drift Hunters">
-        <span class="game-name-overlay">Drift Hunters</span>
-      </button>
-      <button id="special-game-button-22" data-game-url="https://k-web-topaz.vercel.app/games/mc/index.html" data-game-name="Minecraft" title="Minecraft" class="game-list-button">
-        <img src="https://m.media-amazon.com/images/M/MV5BNjQzMDlkNDctYmE3Yi00ZWFiLTlmOWYtMjI4MzQ4Y2JhZjY2XkEyXkFqcGc@._V1_.jpg" alt="Minecraft">
-        <span class="game-name-overlay">Minecraft</span>
-      </button>
-      <button id="special-game-button-23" data-game-url="https://k-web-topaz.vercel.app/games/sm64/index.html" data-game-name="Super Mario 64" title="Super Mario 64" class="game-list-button">
-        <img src="https://m.media-amazon.com/images/M/MV5BNjhmNzg4ZTMtNWVhMy00NjgwLThhZjUtZjY4ZmU2YTVhYjUwXkEyXkFqcGc@._V1_QL75_UY281_CR6,0,190,281_.jpg" alt="Super Mario 64">
-        <span class="game-name-overlay">Super Mario 64</span>
-      </button>
-      <button id="special-game-button-24" data-game-url="https://k-web-topaz.vercel.app/games/papermario/index.html" data-game-name="Paper Mario" title="Paper Mario" class="game-list-button">
-        <img src="https://assetsio.gnwcdn.com/paper-mario-the-thousand-year-door-remake-header.png?width=1200&height=630&fit=crop&enable=upscale&auto=webp" alt="Paper Mario">
-        <span class="game-name-overlay">Paper Mario</span>
-      </button>
-      <button id="special-game-button-25" data-game-url="https://k-web-topaz.vercel.app/games/rocketssoccer/index.html" data-game-name="Rocket Soccer" title="Rocket Soccer" class="game-list-button">
-        <img src="https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=314,height=314,fit=cover,f=auto/e521bbbf13a6480b60d75421e7edc8d8d0e1edadaccd7d43438864b62a74088a.png" alt="Rocket Soccer">
-        <span class="game-name-overlay">Rocket Soccer</span>
-      </button>
-      <button id="special-game-button-26" data-game-url="https://k-web-topaz.vercel.app/games/holeio/index.html" data-game-name="Hole io" title="Hole io" class="game-list-button">
-        <img src="https://upload.wikimedia.org/wikipedia/en/c/ca/Hole.io_logo.jpg" alt="Hole io">
-        <span class="game-name-overlay">Hole io</span>
-      </button>
-      <button id="special-game-button-27" data-game-url="https://k-web-topaz.vercel.app/games/spirittracks/index.html" data-game-name="Legends of Zelda: Spirit Tracks" title="Legends of Zelda: Spirit Tracks" class="game-list-button">
-        <img src="https://m.media-amazon.com/images/I/91WRrZZXw-L._AC_UF1000,1000_QL80_.jpg" alt="Legends of Zelda: Spirit Tracks">
-        <span class="game-name-overlay">Legends of Zelda: Spirit Tracks</span>
-      </button>
-      <button id="special-game-button-28" data-game-url="https://k-web-topaz.vercel.app/games/lazyjump3d/index.html" data-game-name="Lazy Jump 3D" title="Lazy Jump 3D" class="game-list-button">
-        <img src="https://m.media-amazon.com/images/I/81JHYpF2SKL.png" alt="Lazy Jump 3D">
-        <span class="game-name-overlay">Lazy Jump 3D</span>
-      </button>
-      <button id="special-game-button-29" data-game-url="https://k-web-topaz.vercel.app/games/badtimesimulator/index.html" data-game-name="Bad Time Simulator" title="Bad Time Simulator" class="game-list-button">
-        <img src="https://badtimesimulator.io/upload/cache/upload/imgs/sans-fight-simulator-m240x240.jpg" alt="Bad Time Simulator">
-        <span class="game-name-overlay">Bad Time Simulator</span>
-      </button>
-      <button id="special-game-button-30" data-game-url="https://k-web-topaz.vercel.app/games/gunfest/index.html" data-game-name="Gun Fest" title="Gun Fest" class="game-list-button">
-        <img src="https://a.silvergames.com/j/b/gun-fest.jpg" alt="Gun Fest">
-        <span class="game-name-overlay">Gun Fest</span>
-      </button>
-      <button id="special-game-button-31" data-game-url="https://k-web-topaz.vercel.app/games/clusterrush/index.html" data-game-name="Cluster Rush" title="Cluster Rush" class="game-list-button">
-        <img src="https://nutwg.com/en/wp-content/uploads/sites/2/2024/07/2024-07-05-135225600.webp" alt="Cluster Rush">
-        <span class="game-name-overlay">Cluster Rush</span>
-      </button>
-      <button id="special-game-button-32" data-game-url="https://k-web-topaz.vercel.app/games/boxingphysics2/index.html" data-game-name="Boxing Physics 2" title="Boxing Physics 2" class="game-list-button">
-        <img src="https://img.tapimg.net/market/images/5d84d599fb9dff96959facb2f0c55f46.jpg?imageView2/2/w/720/h/720/q/80/format/jpg/interlace/1/ignore-error/1&t=1" alt="Boxing Physics 2">
-        <span class="game-name-overlay">Boxing Physics 2</span>
-      </button>
-      <button id="special-game-button-33" data-game-url="https://k-web-topaz.vercel.app/games/10minutestilldawn/index.html" data-game-name="10 Minutes Till Dawn" title="10 Minutes Till Dawn" class="game-list-button">
-        <img src="https://img.itch.zone/aW1nLzg3MTU5NzMucG5n/original/0LqGxb.png" alt="10 Minutes Till Dawn">
-        <span class="game-name-overlay">10 Minutes Till Dawn</span>
-      </button>
-      <button id="special-game-button-34" data-game-url="https://k-web-topaz.vercel.app/games/pokemonstadium/index.html" data-game-name="Pokemon Stadium" title="Pokemon Stadium" class="game-list-button">
-        <img src="https://assets-prd.ignimgs.com/2022/02/28/pokemonstadium-1646017802114.jpg" alt="Pokemon Stadium">
-        <span class="game-name-overlay">Pokemon Stadium</span>
-      </button>
-      <button id="special-game-button-35" data-game-url="https://k-web-topaz.vercel.app/games/clickerheroes/index.html" data-game-name="Clicker Heroes" title="Clicker Heroes" class="game-list-button">
-        <img src="https://upload.wikimedia.org/wikipedia/en/3/3f/Clicker_Heroes_Logo.jpeg" alt="Clicker Heroes">
-        <span class="game-name-overlay">Clicker Heroes</span>
-      </button>
-      <button id="special-game-button-36" data-game-url="https://k-web-topaz.vercel.app/games/redball4/index.html" data-game-name="RedBall 4" title="RedBall 4" class="game-list-button">
-        <img src="https://www2.minijuegosgratis.com/v3/games/thumbnails/22727_7_sq.jpg" alt="RedBall 4">
-        <span class="game-name-overlay">RedBall 4</span>
-      </button>
-    </div>
-
-    <h2 id="unblockers-heading" class="textstyle">Unblockers</h2>
-    <div id="unblocker-buttons-container">
-      <button data-game-url="https://nebulasucks.lol/en_US/" data-game-name="Nebula Proxy" title="Nebula Proxy" class="game-list-button" data-use-iframe="false">
-        <img src="https://schoolwebproxy.com/wp-content/uploads/2025/04/Nebula-proxy.jpg" alt="Nebula Proxy">
-        <span class="game-name-overlay">Nebula Proxy</span>
-      </button>
-      <button data-game-url="https://suroi-client-aafm-kermit641s-projects.vercel.app" data-game-name="Interstellar" title="Interstellar" class="game-list-button" data-use-iframe="false">
-        <img src="https://avatars.githubusercontent.com/u/103917385?s=280&v=4" alt="Interstellar">
-        <span class="game-name-overlay">Interstellar</span>
-      </button>
-      <button data-game-url="https://info.metropolitanstaffingsolutions.com" data-game-name="Space Proxy" title="Space Proxy" class="game-list-button" data-use-iframe="false">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2QD4q4VlES3tn3mhfv9SMXus1j9zdxMYStw&s" alt="Space Proxy">
-        <span class="game-name-overlay">Space Proxy</span>
-      </button>
-      <button data-game-url="https://kazuma-fumo.24-7.ro" data-game-name="Remmerhead" title="Remmerhead" class="game-list-button" data-use-iframe="false">
-        <img src="https://vysterium-two.vercel.app/icons/prx/rammerhead.svg" alt="Remmerhead">
-        <span class="game-name-overlay">Remmerhead</span>
-      </button>
-      <button data-game-url="https://chart.words.lasvegasanonymous.org" data-game-name="Utopia Proxy" title="Utopia Proxy" class="game-list-button" data-use-iframe="false">
-        <img src="https://storage.ko-fi.com/cdn/useruploads/jpg_88bd9f44-6123-4648-acfe-bb31ee64cacfcover.jpg?v=4403168b-e475-4065-80db-d088f91e8b1e" alt="Utopia Proxy">
-        <span class="game-name-overlay">Utopia Proxy</span>
-      </button>
-      <button data-game-url="https://game.spynick.com" data-game-name="Shadow Proxy" title="Shadow Proxy" class="game-list-button" data-use-iframe="false">
-        <img src="https://cdn.buymeacoffee.com/uploads/membership_level/2023/08/U8gp5xz4RCMOKYEYVJCdFny4YijcqZNCorzOlJLo.png@800w_0e.webp" alt="Shadow Proxy">
-        <span class="game-name-overlay">Shadow Proxy</span>
-      </button>
-      <button data-game-url="https://nirbytexershutle.vercel.app" data-game-name="Shuttle" title="Shuttle" class="game-list-button" data-use-iframe="false">
-        <img src="https://avatars.githubusercontent.com/u/117482007?s=280&v=4" alt="Shuttle">
-        <span class="game-name-overlay">Shuttle</span>
-      </button>
-    </div>
-  </div>
-
-  <div style="position: fixed; top: 20px; right: 160px; z-index: 30;">
-
-  </div>
-
-  <!-- Theme application message container -->
-  <div id="theme-message-container"></div>
-
-  <!-- New Bottom Right GitHub Button -->
-  <button id="bottom-right-github-button" class="styled-button">
-    <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_960_720.png" alt="GitHub">
-  </button>
-
-  <!-- Bottom black bar -->
-  <div id="bottom-bar">
-    <iframe id="spotify-iframe" src="https://open.spotify.com/embed/playlist/4rDW63aN3C3BGKy1FVHDyG?utm_source=generator&repeat=true" width="100%" height="100%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-  </div>
-
-  <script type="importmap">
-    {
-      "imports": {
-        "./script.js": "./script.js",
-        "./search.js": "./search.js",
-        "./theme.js": "./theme.js",
-        "./games.js": "./games.js",
-        "./ui.js": "./ui.js",
-        "./music.js": "./music.js",
-        "./settings.js": "./settings.js"
-      }
+    styledButtons.forEach(button => {
+        // Avoid re-adding if already handled by specific ID listeners in script.js
+        if (button.id !== 'top-right-button' && button.id !== 'github-button' && button.id !== 'bottom-right-github-button') {
+            button.addEventListener('mousemove', handleButtonMouseMove);
+            button.addEventListener('mouseleave', handleButtonMouseLeave);
+        }
+    });
+    
+    if (titleBackgroundImage) {
+        titleBackgroundImage.addEventListener('mousemove', handleImageMouseMove);
+        titleBackgroundImage.addEventListener('mouseleave', handleImageMouseLeave);
+        // Ensure animation is off if glow is disabled by default or setting
+        // This might be better handled by applyGlowSettings
     }
-  </script>
-  <script type="module" src="script.js"></script>
 
-</body>
-</html>
+    // Sidebar toggling (basic example, might need more robust logic from script.js)
+    if (themeButton && themeSidebar) {
+        themeButton.addEventListener('click', () => toggleSidebar(themeSidebar, [settingsSidebar]));
+    }
+    if (settingsButton && settingsSidebar) {
+        settingsButton.addEventListener('click', () => toggleSidebar(settingsSidebar, [themeSidebar]));
+    }
+
+    // Global click listener for closing sidebars (simplified from script.js)
+    document.body.addEventListener('click', (event) => {
+        const target = event.target;
+        if (themeSidebar && !themeSidebar.contains(target) && target !== themeButton) {
+            themeSidebar.classList.remove('open');
+        }
+        if (settingsSidebar && !settingsSidebar.contains(target) && target !== settingsButton) {
+            settingsSidebar.classList.remove('open');
+        }
+        // Add credits sidebar logic if it's also managed here
+    });
+}
+
+
+function toggleSidebar(sidebarToToggle, otherSidebars) {
+    otherSidebars.forEach(sb => {
+        if (sb && sb.classList.contains('open')) {
+            sb.classList.remove('open');
+        }
+    });
+    if (sidebarToToggle) {
+        sidebarToToggle.classList.toggle('open');
+    }
+}
+
+
+function changeTitleBackgroundImage() {
+    if (!titleBackgroundImage) return;
+    titleBackgroundImage.style.opacity = '0';
+
+    setTimeout(() => {
+        currentImageIndex = (currentImageIndex + 1) % slideshowImages.length;
+        titleBackgroundImage.src = slideshowImages[currentImageIndex];
+        titleBackgroundImage.style.opacity = '1';
+    }, fadeDuration);
+}
+
+export function applyGlowSettings(color, enabled) {
+    document.documentElement.style.setProperty('--glow-color', color);
+    document.documentElement.style.setProperty('--glow-color-darker', adjustColorBrightness(color, -30));
+
+    if (color && color.startsWith('#') && color.length === 7) {
+        const r = parseInt(color.substring(1, 3), 16);
+        const g = parseInt(color.substring(3, 5), 16);
+        const b = parseInt(color.substring(5, 7), 16);
+        document.documentElement.style.setProperty('--glow-color-rgb', `${r}, ${g}, ${b}`);
+    } else {
+        document.documentElement.style.setProperty('--glow-color-rgb', `0, 255, 255`); // Default
+    }
+
+    const allGlowElements = [
+        ...document.querySelectorAll('.styled-button'),
+        ...document.querySelectorAll('.game-list-button'),
+        document.getElementById('title-background-image')
+    ].filter(el => el);
+
+    allGlowElements.forEach(element => {
+        // Special case for popup close buttons, always no-glow
+        if (element.textContent === 'X' && element.closest('.popup-container')) {
+            element.classList.add('no-glow');
+            return;
+        }
+        if (enabled) {
+            element.classList.remove('no-glow');
+        } else {
+            element.classList.add('no-glow');
+        }
+    });
+     // Re-apply mouse leave to reset transform if glow was just disabled
+    if (!enabled && titleBackgroundImage) {
+        handleImageMouseLeave({ target: titleBackgroundImage });
+    }
+}
+
+function adjustColorBrightness(hex, percent) {
+    let R = parseInt(hex.substring(1,3),16);
+    let G = parseInt(hex.substring(3,5),16);
+    let B = parseInt(hex.substring(5,7),16);
+
+    R = parseInt(R * (100 + percent) / 100);
+    G = parseInt(G * (100 + percent) / 100);
+    B = parseInt(B * (100 + percent) / 100);
+
+    R = (R<255)?R:255;  
+    G = (G<255)?G:255;  
+    B = (B<255)?B:255;  
+
+    R = (R > 0) ? R : 0;
+    G = (G > 0) ? G : 0;
+    B = (B > 0) ? B : 0;
+
+    R = Math.round(R).toString(16).padStart(2, '0');
+    G = Math.round(G).toString(16).padStart(2, '0');
+    B = Math.round(B).toString(16).padStart(2, '0');
+
+    return "#"+R+G+B;
+}
+
+
+export function applyVideoBackground(videoUrl) {
+    if (backgroundVideo && videoUrl) {
+        backgroundVideo.innerHTML = `<source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.`;
+        backgroundVideo.load();
+    }
+}
+
+function handleButtonMouseMove(e) {
+    const button = e.currentTarget; // Use currentTarget for attached listener
+    if (!button || button.classList.contains('no-glow')) return;
+    if (button.textContent === 'X' && button.closest('.popup-container')) return;
+
+
+    const rect = button.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const mouseX = e.clientX - rect.left - centerX;
+    const mouseY = e.clientY - rect.top - centerY;
+
+    const maxRotation = button.classList.contains('game-list-button') ? 10 : 20;
+    const percentageX = mouseX / centerX;
+    const percentageY = mouseY / centerY;
+    const rotateY = percentageX * maxRotation;
+    const rotateX = percentageY * maxRotation * -1; // Invert X rotation for natural feel
+
+    if (button.classList.contains('game-list-button') && button.classList.contains('loaded')) {
+        button.style.transform = `translateY(0) perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    } else if (button.classList.contains('styled-button') || button.id === 'top-right-button' || button.id === 'github-button' || button.id === 'bottom-right-github-button') {
+        button.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }
+}
+
+function handleButtonMouseLeave(e) {
+    const button = e.currentTarget;
+    if (!button) return;
+    // Don't reset transform if glow is disabled, as it might look odd without the glow effect
+    // if (button.classList.contains('no-glow')) return; 
+    // Allow reset even if no-glow, to return to base state. Glow state controls the visual effect, not the transform.
+
+    if (button.classList.contains('game-list-button') && button.classList.contains('loaded')) {
+        button.style.transform = 'translateY(0) perspective(500px) rotateX(0) rotateY(0)';
+    } else if (button.classList.contains('styled-button') || button.id === 'top-right-button' || button.id === 'github-button' || button.id === 'bottom-right-github-button') {
+        button.style.transform = 'perspective(500px) rotateX(0) rotateY(0)';
+    }
+}
+
+function handleImageMouseMove(e) {
+    const image = e.currentTarget;
+    if (!image || image.classList.contains('no-glow')) return;
+    image.style.transform = 'translateX(-50%) scale(1.03)';
+}
+
+function handleImageMouseLeave(e) {
+    const image = e.currentTarget;
+    if (!image) return; // No need to check for no-glow, always reset
+    image.style.transform = 'translateX(-50%) scale(1)';
+}
+
+export function showNotification(message, duration = 3000) {
+    const notificationContainer = document.getElementById('theme-message-container');
+    if (!notificationContainer) {
+        console.error('Notification container #theme-message-container not found.');
+        return;
+    }
+
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('theme-message'); // Re-using existing class
+    messageElement.textContent = message;
+
+    notificationContainer.appendChild(messageElement);
+    // Force reflow to ensure animation plays
+    void messageElement.offsetWidth; 
+    
+    requestAnimationFrame(() => {
+        messageElement.classList.add('show');
+    });
+
+    setTimeout(() => {
+        messageElement.classList.remove('show');
+        messageElement.addEventListener('transitionend', () => {
+            if (messageElement.parentNode) {
+                messageElement.parentNode.removeChild(messageElement);
+            }
+        }, { once: true });
+    }, duration);
+}
